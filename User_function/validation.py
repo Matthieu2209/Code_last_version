@@ -265,7 +265,7 @@ for i in range(100):
         lever[i] = m_layer.r_0[articulation,muscle]*np.cos(phiknee[i]-m_layer.phi_max[articulation,muscle])
 
 
-#verification de lmtu update (#pour tester suffit de choisir le muscle)
+#verification de lmtu update (#pour tester suffit de choisir le muscle) ok 
 
 lmtu = np.zeros(100)
 test1 = np.zeros(100)
@@ -308,7 +308,10 @@ for i in range(100):
     lmtu[i]= m_layer.l_opt_muscle[muscle] + m_layer.l_slack_muscle[muscle] + delta_lmtu
     test1[i] = m_layer.rho[ankle,GAS]*m_layer.r_0[ankle,GAS]*(np.sin(m_layer.phi_ref[ankle,GAS]-m_layer.phi_max[ankle,GAS]) - np.sin(phiknee[i]-m_layer.phi_max[ankle,GAS]))
 
+#####test pour le git 
 
+modif =1 
+print(modif)
     
 # plot 
 import matplotlib.pyplot as plt
