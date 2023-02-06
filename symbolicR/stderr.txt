@@ -1,0 +1,133 @@
+
+##############################################################
+#	file7.gen 11/01/2023 16:02:18    errors
+##############################################################
+git hash : 8f46effdc05c898000a15b4c4dfc8f70efce4fc0
+
+	Computation of the kinematics........
+
+	Computation of the dynamics....................
+
+		Joints   14  13  12  11  10   9   8   7   6   5
+
+		    -->   4   3   2   1
+
+	Elimination of the superfluous equations.....................
+
+
+		Maximum simultaneous symbolic expressions :  1487
+
+		Maximum number of allocated Kbytes :  69
+
+
+	The symbolic equations have been generated 
+	in the directory: /usr/local/robotran/users/TFE_walking/upload/
+
+
+ 		*** Generation symbolique reussie ! ***
+
+
+
+
+##############################################################
+#	file4.gen 11/01/2023 16:02:18    errors
+##############################################################
+git hash : 8f46effdc05c898000a15b4c4dfc8f70efce4fc0
+
+
+ Warning (error_data): useless process for this multibody model !
+
+
+##############################################################
+#	file3.gen 11/01/2023 16:02:18    errors
+##############################################################
+git hash : 8f46effdc05c898000a15b4c4dfc8f70efce4fc0
+
+
+ Warning (error_data): useless process for this multibody model !
+
+
+##############################################################
+#	file2.gen 11/01/2023 16:02:18    errors
+##############################################################
+git hash : 8f46effdc05c898000a15b4c4dfc8f70efce4fc0
+
+
+ ERROR : The link(1D or 3D) menus require the presence of link(s) (1D or 3D) in the MBS 
+
+
+##############################################################
+#	file5.gen 11/01/2023 16:02:18    errors
+##############################################################
+git hash : 8f46effdc05c898000a15b4c4dfc8f70efce4fc0
+
+
+	Elimination of the superfluous equations.....................
+
+
+		Maximum simultaneous symbolic expressions :  4690
+
+		Maximum number of allocated Kbytes :  219
+
+
+	The symbolic equations have been generated 
+	in the directory: /usr/local/robotran/users/TFE_walking/upload/
+
+
+ 		*** Generation symbolique reussie ! ***
+
+
+
+
+##############################################################
+#	file0.gen 11/01/2023 16:02:18    errors
+##############################################################
+git hash : 8f46effdc05c898000a15b4c4dfc8f70efce4fc0
+
+	Computation of the kinematics........
+
+	Computation of the dynamics.....................
+
+		Joints   14  13  12  11  10   9   8   7   6   5
+
+		    -->   4   3   2   1
+
+	Elimination of the superfluous equations.....................
+
+
+		Maximum simultaneous symbolic expressions :  4270
+
+		Maximum number of allocated Kbytes :  200
+
+
+	The symbolic equations have been generated 
+	in the directory: /usr/local/robotran/users/TFE_walking/upload/
+
+
+ 		*** Generation symbolique reussie ! ***
+
+
+
+
+##############################################################
+#	file1.gen 11/01/2023 16:02:18    errors
+##############################################################
+git hash : 8f46effdc05c898000a15b4c4dfc8f70efce4fc0
+
+
+	Elimination of the superfluous equations.....................
+
+
+		Maximum simultaneous symbolic expressions :  8953
+
+		Maximum number of allocated Kbytes :  419
+
+
+	The symbolic equations have been generated 
+	in the directory: /usr/local/robotran/users/TFE_walking/upload/
+
+
+ 		*** Generation symbolique reussie ! ***
+
+
+
