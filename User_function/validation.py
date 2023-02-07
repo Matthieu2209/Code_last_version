@@ -310,7 +310,8 @@ for i in range(100):
 
 #####test pour le git 
 
-modif =1 
+
+modif =2
 print(modif)
     
 # plot 
