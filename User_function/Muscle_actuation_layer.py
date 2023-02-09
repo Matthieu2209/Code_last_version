@@ -94,13 +94,6 @@ rho = np.array([[0,0.5,0.7,0.7,0,0,0],[0.7,0,0.7,0,0.7,0,0],[0,0,0,0,0.7,0.5,0.5
 
 ################################ useful function ##########################################################################################
 # fonctions utiles permetant de simplifier certaines opérations
-
-def limit_range(x,min,max): #fonction permettant de borner une variable
-    if x<min :
-        return min
-    if x>max :
-        return max
-    else : return x
     
 def pos(x) : #fonction permettant de soit return la valeurs si celle-ci est positive, soit de return 0
     if x>0 : 

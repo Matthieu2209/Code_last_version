@@ -144,5 +144,10 @@ def dt_angle(angle_t, angle_0, dt):
   return dt_angle
 
 
-
+def limit_range(x,min,max): #fonction permettant de borner une variable
+    if x<min :
+        return min
+    if x>max :
+        return max
+    else : return x
 

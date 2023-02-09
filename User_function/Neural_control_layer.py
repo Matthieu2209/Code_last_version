@@ -109,9 +109,9 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
             
         else: 
             
-            Stim[HAM] = So_BAL + k_p * (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) + k_d* u_f.interpolation_memory(dtheta_trunk_memory, diff_t, t_s) 
-            Stim[GLU] = So_BAL + k_p * (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) + k_d* u_f.interpolation_memory(dtheta_trunk_memory, diff_t, t_s) 
-            Stim[HFL] = So_BAL - k_p * (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) - k_d* u_f.interpolation_memory(dtheta_trunk_memory, diff_t, t_s) 
+            Stim[HAM] = So_BAL + u_f.limit_range((k_p * (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) + k_d* u_f.interpolation_memory(dtheta_trunk_memory, diff_t, t_s)),0,float("inf"))
+            Stim[GLU] = So_BAL + u_f.limit_range((k_p * (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) + k_d* u_f.interpolation_memory(dtheta_trunk_memory, diff_t, t_s)),0,float("inf")) 
+            Stim[HFL] = So_BAL - u_f.limit_range((k_p * (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) - k_d* u_f.interpolation_memory(dtheta_trunk_memory, diff_t, t_s)),float("-inf"),0) 
             
             PTO = (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) 
         
@@ -161,11 +161,11 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
             
             if len(np.shape(lce_memory)) == 1 :
                 
-                Stim[TA] += G_TA*(lce_memory[TA]/lopt_TA - loff_TA)
+                Stim[TA] += G_TA*u_f.limit_range((lce_memory[TA]/lopt_TA - loff_TA),0,float("inf"))
             
             else : 
                 
-                Stim[TA] += G_TA*(u_f.interpolation_memory(lce_memory, diff_t, t_l)[TA]/lopt_TA - loff_TA) 
+                Stim[TA] += G_TA*u_f.limit_range((u_f.interpolation_memory(lce_memory, diff_t, t_l)[TA]/lopt_TA - loff_TA),0,float("inf"))
                 
         
         ##### Impact de la charge portée par la jambe ipsilatérale
@@ -173,10 +173,10 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
         DeltaThRef =0.005
         
         if t_s >= 0 :
-            
-            Stim[HAM] = u_f.interpolation_memory(ipsiDx_thigh, diff_t, t_s)/DeltaThRef *Stim[HAM]
-            Stim[GLU] = u_f.interpolation_memory(ipsiDx_thigh, diff_t, t_s)/DeltaThRef *Stim[GLU]
-            Stim[HFL] = u_f.interpolation_memory(ipsiDx_thigh, diff_t, t_s)/DeltaThRef *Stim[HFL]
+            Dx_thigh = u_f.limit_range(u_f.interpolation_memory(ipsiDx_thigh, diff_t, t_s), 0, float("inf"))
+            Stim[HAM] = u_f.limit_range((Dx_thigh/DeltaThRef *Stim[HAM]),0,1)
+            Stim[GLU] = u_f.limit_range((Dx_thigh/DeltaThRef *Stim[GLU]),0,1)
+            Stim[HFL] = u_f.limit_range((Dx_thigh/DeltaThRef *Stim[HFL]),0,1)
         
         ##### Double support 
         
@@ -228,11 +228,11 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
             
             if len(np.shape(lce_memory)) == 1 :
                 
-                Stim[HFL] = So + G_HFL * (lce_memory[HFL]/lopt_HFL - loff_HFL) - G_HAM_HFL * (lce_memory[HAM]/lopt_HAM  - loff_HAM) + k_lean*PTO
+                Stim[HFL] = So + G_HFL * u_f.limit_range((lce_memory[HFL]/lopt_HFL - loff_HFL),0,float("inf")) - G_HAM_HFL * u_f.limit_range((lce_memory[HAM]/lopt_HAM  - loff_HAM),0,float("inf")) + k_lean*PTO
                 
             else : 
                 
-                Stim[HFL] = So + G_HFL * (u_f.interpolation_memory(lce_memory, diff_t, t_s)[HFL]/lopt_HFL - loff_HFL) - G_HAM_HFL * (u_f.interpolation_memory(lce_memory, diff_t, t_s)[HAM]/lopt_HAM  - loff_HAM) + k_lean*PTO
+                Stim[HFL] = So + G_HFL * u_f.limit_range((u_f.interpolation_memory(lce_memory, diff_t, t_s)[HFL]/lopt_HFL - loff_HFL),0,float("inf")) - G_HAM_HFL * u_f.limit_range((u_f.interpolation_memory(lce_memory, diff_t, t_s)[HAM]/lopt_HAM  - loff_HAM),0,float("inf")) + k_lean*PTO
                 
                 
         ###### loi de reflex pour les muscles ayant un delai long (TA)
@@ -245,12 +245,14 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
             
             if len(np.shape(lce_memory)) ==1 :
                 
-                print('eaz')
-                Stim[TA] = So + G_TA * (lce_memory[TA]/lopt_TA - loff_TA)
+                Stim[TA] = So + G_TA * u_f.limit_range((lce_memory[TA]/lopt_TA - loff_TA),0,float("inf"))
             
             else : 
                 
-                Stim[TA] = So + G_TA * (u_f.interpolation_memory(lce_memory, diff_t, t_l)[TA]/lopt_TA - loff_TA)
+                Stim[TA] = So + G_TA * u_f.limit_range((u_f.interpolation_memory(lce_memory, diff_t, t_l)[TA]/lopt_TA - loff_TA),0,float("inf"))
+    
+    for i in range(len(Stim)):
+        Stim[i] = u_f.limit_range(Stim[i], 0.01, 1)
         
     return Stim
 
