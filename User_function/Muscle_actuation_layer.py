@@ -304,7 +304,7 @@ def joint_limits(articulation,phi,dphi):
     
     if articulation == ankle : # ankle joint limits 
     
-        if phi> 30 * np.pi/180 or phi < 170 * np.pi/180 : #check that the angle values do not take unrealistic values
+        if phi> 30 * np.pi/180 and phi < 170 * np.pi/180 : #check that the angle values do not take unrealistic values
             
             u1 = (phi- phi_a_up)*c_joint
             u2 = - dphi / w_max
@@ -336,7 +336,7 @@ def joint_limits(articulation,phi,dphi):
     
     elif articulation == knee : # knee joint limits
     
-        if phi> 40 * np.pi/180 or phi < 185 * np.pi/180 : #check that the angle values do not take unrealistic values
+        if phi> 40 * np.pi/180 and phi < 185 * np.pi/180 : #check that the angle values do not take unrealistic values
     
             u1 = (phi- phi_k_up)*c_joint
             u2 = - dphi / w_max
@@ -358,7 +358,7 @@ def joint_limits(articulation,phi,dphi):
     
     elif articulation == hip : # hip joint limits 
     
-        if phi> 10 * np.pi/180 or phi < 260 * np.pi/180 : #check that the angle values do not take unrealistic values
+        if phi> 10 * np.pi/180 and phi < 260 * np.pi/180 : #check that the angle values do not take unrealistic values
     
             u1 = (phi- phi_h_up)*c_joint
             u2 = - dphi / w_max

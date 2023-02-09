@@ -36,6 +36,7 @@ VAS = 0
 fv_C1 = np.zeros(100)
 fv_C2 = np.zeros(100)
 phiknee = np.zeros(100)
+dphi = np.zeros(100)
 
 for i in range (100):
     if i <=9 :
@@ -45,8 +46,8 @@ for i in range (100):
         lse[i] = 2*0.23
         fv_C1[i] = 0.1
         fv_C2[i] = 1.1
-        phiknee[i] = 2
-        
+        phiknee[i] = 4
+        dphi[i] = 0.1
         
     elif i <= 19 :
         
@@ -55,7 +56,8 @@ for i in range (100):
         lse[i] = 1.8*0.23
         fv_C1[i] = 0.2
         fv_C2[i] = 1.2
-        phiknee[i] = 2.1
+        phiknee[i] = 4.1
+        dphi[i] = 0.1
         
     elif i <=29 :
         
@@ -65,7 +67,8 @@ for i in range (100):
         lse[i] = 1.6*0.23
         fv_C1[i] = 0.3
         fv_C2[i] = 1.3
-        phiknee[i] = 2.2
+        phiknee[i] = 4.2
+        dphi[i] = 0.1
     
     elif i <= 39 :
         
@@ -75,7 +78,8 @@ for i in range (100):
         lse[i] = 1.4*0.23
         fv_C1[i] = 0.4
         fv_C2[i] = 1.4
-        phiknee[i] = 2.3
+        phiknee[i] = 4.3
+        dphi[i] = 0.1
     
     elif i <= 49 :
         
@@ -85,7 +89,8 @@ for i in range (100):
         lse[i] = 1.2*0.23
         fv_C1[i] = 0.5
         fv_C2[i] = 1.5
-        phiknee[i] = 2.4
+        phiknee[i] = 4.4
+        dphi[i] = 0.1
 
     elif i <= 59 :
         
@@ -95,7 +100,8 @@ for i in range (100):
         lse[i] = 1*0.23
         fv_C1[i] = 0.5
         fv_C2[i] = 1.5
-        phiknee[i] = 2.5
+        phiknee[i] = 4.5
+        dphi[i] = 0.1
     
     elif i <= 69 :
         
@@ -104,7 +110,8 @@ for i in range (100):
         lse[i] = 1.2*0.23
         fv_C1[i] = 0.6
         fv_C2[i] = 1.4
-        phiknee[i] = 2.6
+        phiknee[i] = 4.6
+        dphi[i] = 0.1
     
     elif i <= 79 :
         
@@ -113,7 +120,8 @@ for i in range (100):
         lse[i] = 1.4*0.23
         fv_C1[i] = 0.7
         fv_C2[i] = 1.3
-        phiknee[i] = 2.7
+        phiknee[i] = 4.7
+        dphi[i] = 0.1
     
     elif i <= 89 :
         
@@ -122,7 +130,8 @@ for i in range (100):
         lse[i] = 1.6*0.23
         fv_C1[i] = 0.8
         fv_C2[i] = 1.2
-        phiknee[i] = 2.8
+        phiknee[i] = 4.8
+        dphi[i] = 0.1
         
         
     elif i <= 99 :
@@ -132,7 +141,8 @@ for i in range (100):
         lse[i] = 1.8*0.23
         fv_C1[i] = 0.9
         fv_C2[i] = 1.1
-        phiknee[i] = 2.9
+        phiknee[i] = 4.9
+        dphi[i] = 0.1
         
 # force-length relation for se : ok
 
@@ -309,7 +319,97 @@ for i in range(100):
     test1[i] = m_layer.rho[ankle,GAS]*m_layer.r_0[ankle,GAS]*(np.sin(m_layer.phi_ref[ankle,GAS]-m_layer.phi_max[ankle,GAS]) - np.sin(phiknee[i]-m_layer.phi_max[ankle,GAS]))
 
 
+
+#verification de joint limits (pourchanger l'articulation suffit d'indiquer l'articulation à analyser dans art )
+ext_torque = np.zeros(100)
+torque_j = np.zeros(100)
+
+phi_a_up = 130 * np.pi/180
+phi_a_low = 70 * np.pi/180
+phi_k_up = 175 * np.pi/180
+phi_h_up = 230 * np.pi/180
+
+c_joint = 17.1887
+w_max = 0.01745
+
+art = hip
+
+if art == knee :
+    for i in range(100):
+        
     
+        if phiknee[i] > 40 * np.pi/180 and phiknee[i] < 185 * np.pi/180 : #check that the angle values do not take unrealistic values
+        
+            u1 = (phiknee[i] - phi_k_up)*c_joint
+            u2 = - dphi[i] / w_max
+    
+            if u2<1 and u1>0 :
+                
+                ext_torque[i] = -u1*(1-u2)
+            
+            else : 
+                
+                ext_torque[i] = 0
+            
+        
+        else : # raise an error if unrealistic values 
+            
+            ext_torque[i] = -100
+        print(ext_torque[i])
+
+if art == ankle :
+    
+    for i in range(100):
+        
+        if phiknee[i]> 30 * np.pi/180 and phiknee[i] < 170 * np.pi/180 : #check that the angle values do not take unrealistic values
+            
+            u1 = (phiknee[i]- phi_a_up)*c_joint
+            u2 = - dphi[i] / w_max
+            u3 = (phiknee[i]- phi_a_low)*c_joint
+            u4 = dphi[i]/w_max
+            
+            if u2<1 and u1>0 :
+                
+                ext_torque = -u1*(1-u2)
+            
+            else : 
+                
+                ext_torque = 0
+            
+            if u4<1 and u3 < 0 :
+                
+                flex_torque = -u3*(1-u4)
+            
+            else :
+                
+                flex_torque = 0
+            
+            torque_j[i] = (ext_torque + flex_torque)
+        
+        else : # raise an error if unrealistic values 
+            
+            torque_j[i]=-200
+        print(torque_j[i])
+        
+if art == hip :
+    
+    for i in range(100):
+        if phiknee[i]> 10 * np.pi/180 and phiknee[i] < 260 * np.pi/180 : #check that the angle values do not take unrealistic values
+    
+            u1 = (phiknee[i]- phi_h_up)*c_joint
+            u2 = - dphi[i] / w_max
+            if u2<1 and u1>0 :
+                
+                ext_torque[i] = -u1*(1-u2)
+            
+            else : 
+                
+                ext_torque[i] = 0
+        
+        else : # raise an error if unrealistic values 
+                
+            ext_torque[i]=-200
+        print(ext_torque[i])
 # plot 
 import matplotlib.pyplot as plt
-plt.plot(time,lmtu)
+plt.plot(time,ext_torque)
