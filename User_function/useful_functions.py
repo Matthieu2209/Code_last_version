@@ -8,6 +8,7 @@ Created on Thu Nov 10 13:51:51 2022
 
 import numpy as np
 import math
+from scipy import signal 
 
 ################################ Usefuls functions ####################################################################################
 
@@ -150,4 +151,10 @@ def limit_range(x,min,max): #fonction permettant de borner une variable
     if x>max :
         return max
     else : return x
+
+
+def filter_signal(s, num, den):
+    
+    return signal.lfilter(num, den, s)
+
 

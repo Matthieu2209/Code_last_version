@@ -185,7 +185,9 @@ def user_JointForces(mbs_data, tsim):
         if dt != 0 :
             
             Ldx_memory= np.hstack([Ldx_memory,mbs_data.q[id_thighloadL]])
+            Ldx_memory= u_f.filter_signal(Ldx_memory, [1], [0.02,1])
             Rdx_memory= np.hstack([Rdx_memory,mbs_data.q[id_thighloadR]])
+            Rdx_memory= u_f.filter_signal(Rdx_memory, [1], [0.02,1])
             StanceL_memory.append(Stance_state[0])
             StanceR_memory.append(Stance_state[1])
             theta_knee_memoryL = np.hstack([theta_knee_memoryL, muscle.model_angle(knee, mbs_data.q[id_kneeL])])
