@@ -35,7 +35,7 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
     G_SOL = 1.2/4000 #gains for the SOL muscle normalised with the maximal force
     
     G_GAS = 1.1/1500
-    G_TA  = 1.1/800
+    G_TA  = 1.1
     G_SOL_TA = 0.0001
     
     G_HAM = 0.65/3000
@@ -111,7 +111,7 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
             
             Stim[HAM] = So_BAL + u_f.limit_range((k_p * (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) + k_d* u_f.interpolation_memory(dtheta_trunk_memory, diff_t, t_s)),0,float("inf"))
             Stim[GLU] = So_BAL + u_f.limit_range((k_p * (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) + k_d* u_f.interpolation_memory(dtheta_trunk_memory, diff_t, t_s)),0,float("inf")) 
-            Stim[HFL] = So_BAL - u_f.limit_range((k_p * (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) - k_d* u_f.interpolation_memory(dtheta_trunk_memory, diff_t, t_s)),float("-inf"),0) 
+            Stim[HFL] = So_BAL - u_f.limit_range((k_p * (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) + k_d* u_f.interpolation_memory(dtheta_trunk_memory, diff_t, t_s)),float("-inf"),0) 
             
             PTO = (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) 
         
@@ -132,7 +132,7 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
                 Stim[VAS] = So_VAS + G_VAS*u_f.interpolation_memory(Fm_memory, diff_t, t_m)[VAS]
                 
             
-            if (u_f.interpolation_memory(theta_knee_memory, diff_t, t_m) > phi_k_off and u_f.interpolation_memory(dtheta_knee_memory, diff_t, t_m)):
+            if u_f.interpolation_memory(theta_knee_memory, diff_t, t_m) > phi_k_off and u_f.interpolation_memory(dtheta_knee_memory, diff_t, t_m)>0:
                 
                 Stim[VAS] -= k_phi*(u_f.interpolation_memory(theta_knee_memory, diff_t, t_m)-phi_k_off)
                 
@@ -151,13 +151,13 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
                 
                 Stim[SOL] = So + G_SOL*Fm_memory[SOL]
                 Stim[GAS] = So + G_GAS*Fm_memory[GAS]
-                Stim[TA]  = So - G_SOL_TA*Fm_memory[TA]
+                Stim[TA]  = So - G_SOL_TA*Fm_memory[SOL]
 
             else :
                 
                 Stim[SOL] = So + G_SOL*u_f.interpolation_memory(Fm_memory, diff_t, t_l)[SOL]
                 Stim[GAS] = So + G_GAS*u_f.interpolation_memory(Fm_memory, diff_t, t_l)[GAS]
-                Stim[TA]  = So - G_SOL_TA*u_f.interpolation_memory(Fm_memory, diff_t, t_l)[TA]
+                Stim[TA]  = So - G_SOL_TA*u_f.interpolation_memory(Fm_memory, diff_t, t_l)[SOL]
             
             if len(np.shape(lce_memory)) == 1 :
                 
@@ -173,16 +173,17 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
         DeltaThRef =0.005
         
         if t_s >= 0 :
-            Dx_thigh = u_f.limit_range(u_f.interpolation_memory(ipsiDx_thigh, diff_t, t_s), 0, float("inf"))
-            Stim[HAM] = u_f.limit_range((Dx_thigh/DeltaThRef *Stim[HAM]),0,1)
-            Stim[GLU] = u_f.limit_range((Dx_thigh/DeltaThRef *Stim[GLU]),0,1)
-            Stim[HFL] = u_f.limit_range((Dx_thigh/DeltaThRef *Stim[HFL]),0,1)
+            IDx_thigh = u_f.limit_range(u_f.interpolation_memory(ipsiDx_thigh, diff_t, t_s), 0, float("inf"))
+            Stim[HAM] = u_f.limit_range((IDx_thigh/DeltaThRef *Stim[HAM]),0,1)
+            Stim[GLU] = u_f.limit_range((IDx_thigh/DeltaThRef *Stim[GLU]),0,1)
+            Stim[HFL] = u_f.limit_range((IDx_thigh/DeltaThRef *Stim[HFL]),0,1)
         
         ##### Double support 
         
         if t_s >= 0 :
             
-            Stim[VAS] -= contra_on_ipsi*u_f.interpolation_memory(contraDx_thigh, diff_t, t_s)/DeltaThRef
+            CDx_thigh = u_f.limit_range(u_f.interpolation_memory(contraDx_thigh, diff_t, t_s), 0, float("inf"))
+            Stim[VAS] -= contra_on_ipsi*u_f.interpolation_memory(CDx_thigh, diff_t, t_s)/DeltaThRef
         
         Stim[GLU] -= contra_on_ipsi*DS
         Stim[HFL] += contra_on_ipsi*DS

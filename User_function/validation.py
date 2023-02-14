@@ -37,6 +37,16 @@ fv_C1 = np.zeros(100)
 fv_C2 = np.zeros(100)
 phiknee = np.zeros(100)
 dphi = np.zeros(100)
+lkneestate = np.zeros(100)
+theta = np.zeros(100)
+dtheta = np.zeros(100)
+Ldxthigh = np.zeros(100)
+Rdxthigh = np.zeros(100)
+RonL = np.zeros(100)
+LfmVAS = np.zeros(100)
+LfmGAS = np.zeros(100)
+LfmSOL = np.zeros(100)
+LlceTA = np.zeros(100)
 
 for i in range (100):
     if i <=9 :
@@ -48,6 +58,16 @@ for i in range (100):
         fv_C2[i] = 1.1
         phiknee[i] = 4
         dphi[i] = 0.1
+        lkneestate[i] = 0
+        theta[i] = 0.2
+        dtheta[i] = 0.1
+        Ldxthigh[i] = 0
+        Rdxthigh[i] = 0.006
+        RonL[i] = 1
+        LfmVAS[i] = 0
+        LfmGAS[i] = 0
+        LfmSOL[i] = 0
+        LlceTA[i] = 0
         
     elif i <= 19 :
         
@@ -58,6 +78,16 @@ for i in range (100):
         fv_C2[i] = 1.2
         phiknee[i] = 4.1
         dphi[i] = 0.1
+        lkneestate[i] = 0.1745
+        theta[i] = 0.1
+        dtheta[i] = -0.1
+        Ldxthigh[i] = 0
+        Rdxthigh[i] = 0.006
+        RonL[i] = 1
+        LfmVAS[i] = 600
+        LfmGAS[i] = 0
+        LfmSOL[i] = 0
+        LlceTA[i] = 0.15
         
     elif i <=29 :
         
@@ -69,6 +99,16 @@ for i in range (100):
         fv_C2[i] = 1.3
         phiknee[i] = 4.2
         dphi[i] = 0.1
+        lkneestate[i] = 0
+        theta[i] = 0.2
+        dtheta[i] = 0.1
+        Ldxthigh[i] = 0.006
+        Rdxthigh[i] = 0
+        RonL[i] = 0
+        LfmVAS[i] = 1300
+        LfmGAS[i] = 1100
+        LfmSOL[i] = 2100
+        LlceTA[i] = 0.22
     
     elif i <= 39 :
         
@@ -80,6 +120,16 @@ for i in range (100):
         fv_C2[i] = 1.4
         phiknee[i] = 4.3
         dphi[i] = 0.1
+        lkneestate[i] = 0.1745
+        theta[i] = 0.1
+        dtheta[i] = -0.1
+        Ldxthigh[i] = 0.006
+        Rdxthigh[i] = 0
+        RonL[i] = 0
+        LfmVAS[i] = 0
+        LfmGAS[i] = 0
+        LfmSOL[i] = 0
+        LlceTA[i] = 0
     
     elif i <= 49 :
         
@@ -91,6 +141,16 @@ for i in range (100):
         fv_C2[i] = 1.5
         phiknee[i] = 4.4
         dphi[i] = 0.1
+        lkneestate[i] = 0
+        theta[i] = 0.2
+        dtheta[i] = 0.1
+        Ldxthigh[i] = 0
+        Rdxthigh[i] = 0.006
+        RonL[i] = 1
+        LfmVAS[i] = 600
+        LfmGAS[i] = 0
+        LfmSOL[i] = 0
+        LlceTA[i] = 0.15
 
     elif i <= 59 :
         
@@ -102,6 +162,16 @@ for i in range (100):
         fv_C2[i] = 1.5
         phiknee[i] = 4.5
         dphi[i] = 0.1
+        lkneestate[i] = 0.1745
+        theta[i] = 0.1
+        dtheta[i] = -0.1
+        Ldxthigh[i] = 0
+        Rdxthigh[i] = 0.006
+        RonL[i] = 1
+        LfmVAS[i] = 1300
+        LfmGAS[i] = 1100
+        LfmSOL[i] = 2100
+        LlceTA[i] = 0.22
     
     elif i <= 69 :
         
@@ -112,6 +182,16 @@ for i in range (100):
         fv_C2[i] = 1.4
         phiknee[i] = 4.6
         dphi[i] = 0.1
+        lkneestate[i] = 0
+        theta[i] = 0.2
+        dtheta[i] = 0.1
+        Ldxthigh[i] = 0.006
+        Rdxthigh[i] = 0
+        RonL[i] = 0
+        LfmVAS[i] = 0
+        LfmGAS[i] = 0
+        LfmSOL[i] = 0
+        LlceTA[i] = 0
     
     elif i <= 79 :
         
@@ -122,6 +202,16 @@ for i in range (100):
         fv_C2[i] = 1.3
         phiknee[i] = 4.7
         dphi[i] = 0.1
+        lkneestate[i] = 0.1745
+        theta[i] = 0.1
+        dtheta[i] = -0.1
+        Ldxthigh[i] = 0.006
+        Rdxthigh[i] = 0
+        RonL[i] = 0
+        LfmVAS[i] = 600
+        LfmGAS[i] = 0
+        LfmSOL[i] = 0
+        LlceTA[i] = 0.15
     
     elif i <= 89 :
         
@@ -132,6 +222,16 @@ for i in range (100):
         fv_C2[i] = 1.2
         phiknee[i] = 4.8
         dphi[i] = 0.1
+        lkneestate[i] = 0
+        theta[i] = 0.2
+        dtheta[i] = 0.1
+        Ldxthigh[i] = 0
+        Rdxthigh[i] = 0.006
+        RonL[i] = 1
+        LfmVAS[i] = 1300
+        LfmGAS[i] = 1100
+        LfmSOL[i] = 2100
+        LlceTA[i] = 0.22
         
         
     elif i <= 99 :
@@ -143,6 +243,16 @@ for i in range (100):
         fv_C2[i] = 1.1
         phiknee[i] = 4.9
         dphi[i] = 0.1
+        lkneestate[i] = 0.1745
+        theta[i] = 0.1
+        dtheta[i] = -0.1
+        Ldxthigh[i] = 0
+        Rdxthigh[i] = 0.006
+        RonL[i] = 1
+        LfmVAS[i] = 0
+        LfmGAS[i] = 0
+        LfmSOL[i] = 0
+        LlceTA[i] = 0
         
 # force-length relation for se : ok
 
@@ -410,6 +520,79 @@ if art == hip :
                 
             ext_torque[i]=-200
         print(ext_torque[i])
+        
+        
+# Verification Stance reflex
+
+So_BAL = 0.05 #HAM,GLU,HFL
+So_VAS = 0.09 #VAS
+So = 0.01 
+G_VAS = 1.15/6000 #gains for the VAS muscle normalised with the maximal force
+G_GAS = 1.1/1500
+G_SOL_TA = 0.0001
+G_TA  = 1.1
+G_SOL = 1.2/4000 #gains for the SOL muscle normalised with the maximal force
+
+lopt_TA = 6
+loff_TA = 0.71
+k_p = 1.91
+theta_ref = 0.105
+k_d = 0.2
+DS=0.25
+phi_k_off = 2.97
+k_phi = 2
+DeltaThRef =0.005
+Stim_HFL = np.zeros(100)
+Stim_GLU = np.zeros(100)
+Stim_HAM = np.zeros(100)
+Stim_VAS = np.zeros(100)
+Stim_GAS = np.zeros(100)
+Stim_TA = np.zeros(100)
+Stim_SOL = np.zeros(100)
+
+for i in range(100) :
+    
+    #HFL
+    
+    Stim_HFL[i] = So_BAL - u_f.limit_range((k_p * (theta[i] -theta_ref) + k_d* dtheta[i]),float("-inf"),0)
+    Dx_thigh = u_f.limit_range(Ldxthigh[i], 0, float("inf"))
+    Stim_HFL[i] = u_f.limit_range((Dx_thigh/DeltaThRef *Stim_HFL[i]),0,1)
+    Stim_HFL[i] += RonL[i]*DS
+    
+    #GLU
+    
+    Stim_GLU[i] = So_BAL + u_f.limit_range((k_p * (theta[i]-theta_ref) + k_d* dtheta[i]),0,float("inf"))
+    Dx_thigh = u_f.limit_range(Ldxthigh[i], 0, float("inf"))
+    Stim_GLU[i] = u_f.limit_range((Dx_thigh/DeltaThRef *Stim_GLU[i]),0,1)
+    Stim_GLU[i] -= RonL[i]*DS
+    Stim_GLU[i]*=0.7
+    
+    #HAM
+    
+    Stim_HAM[i] = So_BAL + u_f.limit_range((k_p * (theta[i]-theta_ref) + k_d* dtheta[i]),0,float("inf"))
+    Dx_thigh = u_f.limit_range(Ldxthigh[i], 0, float("inf"))
+    Stim_HAM[i] = u_f.limit_range((Dx_thigh/DeltaThRef *Stim_HAM[i]),0,1)
+    
+    #VAS
+    
+    Stim_VAS[i] = So_VAS+ G_VAS *LfmVAS[i]
+    Stim_VAS[i] -= k_phi*lkneestate[i]
+    Dx_thigh = u_f.limit_range(Rdxthigh[i], 0, float("inf"))
+    Stim_VAS[i] -= RonL[i]*Dx_thigh/DeltaThRef
+    
+    #GAS 
+    
+    Stim_GAS[i] = So + G_GAS*LfmGAS[i]
+    
+    #TA
+    
+    Stim_TA[i] = So - G_SOL_TA*LfmSOL[i]
+    Stim_TA[i] += G_TA*LlceTA[i]
+    
+    #SOL
+    
+    Stim_SOL[i] = So + G_SOL*LfmSOL[i]
+
 # plot 
 import matplotlib.pyplot as plt
-plt.plot(time,ext_torque)
+plt.plot(time,Stim_SOL)
