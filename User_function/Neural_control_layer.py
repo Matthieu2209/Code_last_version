@@ -39,8 +39,8 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
     G_SOL_TA = 0.0001
     
     G_HAM = 0.65/3000
-    G_GLU = 0.4/1500
-    G_HFL = 0.35/2000
+    G_GLU = 3.33e-4
+    G_HFL = 0.5
     G_HAM_HFL = 4
     
     #offset
@@ -56,7 +56,7 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
     
     So = 0.01 
     So_VAS = 0.09 #VAS
-    So_BAL = 0.05 #HAM,GLU,HFL
+    So_BAL = 0.05 #HAM,GLU,HFL en stance
     
     #parameters
     
@@ -198,7 +198,7 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
     ####### SWING PHASE #######
     
 
-    else : #permet dobtenir la stimulation des muscles en swing phase (
+    else : #permet dobtenir la stimulation des muscles en swing phase 
         
         ###### loi de reflex pour le VAS, SOL et GAS (juste pré-stimulation)
         
@@ -210,9 +210,9 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
         
         if t_s <0 :
         
-            Stim[HAM] = So_BAL
-            Stim[GLU] = So_BAL
-            Stim[HFL] = So_BAL
+            Stim[HAM] = So
+            Stim[GLU] = So
+            Stim[HFL] = So
             
         else :
             

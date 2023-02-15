@@ -46,7 +46,13 @@ RonL = np.zeros(100)
 LfmVAS = np.zeros(100)
 LfmGAS = np.zeros(100)
 LfmSOL = np.zeros(100)
+LfmHAM = np.zeros(100)
+LfmGLU = np.zeros(100)
 LlceTA = np.zeros(100)
+LlceHFL = np.zeros(100)
+LlceHAM = np.zeros(100)
+deltatheta = np.zeros(100)
+
 
 for i in range (100):
     if i <=9 :
@@ -68,6 +74,11 @@ for i in range (100):
         LfmGAS[i] = 0
         LfmSOL[i] = 0
         LlceTA[i] = 0
+        deltatheta[i]= 0
+        LlceHFL[i]=0.1
+        LlceHAM[i] =0
+        LfmHAM[i] = 0
+        LfmGLU[i] = 0
         
     elif i <= 19 :
         
@@ -88,6 +99,11 @@ for i in range (100):
         LfmGAS[i] = 0
         LfmSOL[i] = 0
         LlceTA[i] = 0.15
+        deltatheta[i]= 0.1
+        LlceHFL[i]=0.45
+        LlceHAM[i] =0.16
+        LfmHAM[i] = 400
+        LfmGLU[i] = 400
         
     elif i <=29 :
         
@@ -109,6 +125,11 @@ for i in range (100):
         LfmGAS[i] = 1100
         LfmSOL[i] = 2100
         LlceTA[i] = 0.22
+        deltatheta[i]= 0.15
+        LlceHFL[i]=0.1
+        LlceHAM[i] =0
+        LfmHAM[i] = 1400
+        LfmGLU[i] = 550
     
     elif i <= 39 :
         
@@ -130,6 +151,11 @@ for i in range (100):
         LfmGAS[i] = 0
         LfmSOL[i] = 0
         LlceTA[i] = 0
+        deltatheta[i]= 0
+        LlceHFL[i]=0.45
+        LlceHAM[i] =0.16
+        LfmHAM[i] = 0
+        LfmGLU[i] = 0
     
     elif i <= 49 :
         
@@ -151,7 +177,12 @@ for i in range (100):
         LfmGAS[i] = 0
         LfmSOL[i] = 0
         LlceTA[i] = 0.15
-
+        deltatheta[i]= 0.1
+        LlceHFL[i]=0.1
+        LlceHAM[i] =0
+        LfmHAM[i] = 400
+        LfmGLU[i] = 400
+        
     elif i <= 59 :
         
         Stim[i] = 0.25
@@ -172,6 +203,11 @@ for i in range (100):
         LfmGAS[i] = 1100
         LfmSOL[i] = 2100
         LlceTA[i] = 0.22
+        deltatheta[i]= 0.15
+        LlceHFL[i]=0.45
+        LlceHAM[i] =0.16
+        LfmHAM[i] = 1400
+        LfmGLU[i] = 550
     
     elif i <= 69 :
         
@@ -192,6 +228,12 @@ for i in range (100):
         LfmGAS[i] = 0
         LfmSOL[i] = 0
         LlceTA[i] = 0
+        deltatheta[i]= 0
+        LlceHFL[i]=0.1
+        LlceHAM[i] =0
+        LfmHAM[i] = 0
+        LfmGLU[i] = 0
+        
     
     elif i <= 79 :
         
@@ -212,6 +254,11 @@ for i in range (100):
         LfmGAS[i] = 0
         LfmSOL[i] = 0
         LlceTA[i] = 0.15
+        deltatheta[i]= 0.1
+        LlceHFL[i]=0.45
+        LlceHAM[i] =0.16
+        LfmHAM[i] = 400
+        LfmGLU[i] = 400
     
     elif i <= 89 :
         
@@ -232,6 +279,11 @@ for i in range (100):
         LfmGAS[i] = 1100
         LfmSOL[i] = 2100
         LlceTA[i] = 0.22
+        deltatheta[i]= 0.15
+        LlceHFL[i]=0.1
+        LlceHAM[i] =0
+        LfmHAM[i] = 1400
+        LfmGLU[i] = 550
         
         
     elif i <= 99 :
@@ -253,6 +305,12 @@ for i in range (100):
         LfmGAS[i] = 0
         LfmSOL[i] = 0
         LlceTA[i] = 0
+        deltatheta[i]= 0
+        LlceHFL[i]=0.45
+        LlceHFL[i]=0.1
+        LlceHAM[i] =0.16
+        LfmHAM[i] = 0
+        LfmGLU[i] = 0
         
 # force-length relation for se : ok
 
@@ -532,6 +590,10 @@ G_GAS = 1.1/1500
 G_SOL_TA = 0.0001
 G_TA  = 1.1
 G_SOL = 1.2/4000 #gains for the SOL muscle normalised with the maximal force
+G_HFL = 0.5
+G_HAM_HFL = 4
+G_GLU = 3.33e-4
+G_HAM = 0.65/3000
 
 lopt_TA = 6
 loff_TA = 0.71
@@ -542,6 +604,7 @@ DS=0.25
 phi_k_off = 2.97
 k_phi = 2
 DeltaThRef =0.005
+k_lean = 1.1459
 Stim_HFL = np.zeros(100)
 Stim_GLU = np.zeros(100)
 Stim_HAM = np.zeros(100)
@@ -593,6 +656,26 @@ for i in range(100) :
     
     Stim_SOL[i] = So + G_SOL*LfmSOL[i]
 
+
+#verification Swing reflex 
+
+for i in range(100):
+    
+    #HFL
+    Stim_HFL[i] = So + k_lean*deltatheta[i]
+    Stim_HFL[i] += G_HFL * LlceHFL[i]  
+    Stim_HFL[i] -= G_HAM_HFL * LlceHAM[i]
+    
+    #GLU
+    Stim_GLU[i] = So + G_GLU * LfmGLU[i]
+    
+    #HAM 
+    Stim_HAM[i] = So + G_HAM * LfmHAM[i]
+    
+    #TA
+    Stim_TA[i] = So + G_TA * LlceTA[i]
+    
+
 # plot 
 import matplotlib.pyplot as plt
-plt.plot(time,Stim_SOL)
+plt.plot(time,Stim_TA)
