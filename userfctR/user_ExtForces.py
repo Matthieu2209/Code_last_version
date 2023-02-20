@@ -7,7 +7,7 @@ import numpy as np
 import math
 
 class GRF:
-    def __init__(self, xcp, xcp_dot, x0, zcp, zcp_dot,z0=2, kx=8200, kz=78480, musl=0.8, must=0.9, vmax=1):
+    def __init__(self, xcp, xcp_dot, x0, zcp, zcp_dot,z0=1.9, kx=8200, kz=78480, musl=0.8, must=0.9, vmax=0.03):
         
         
         self.xcp = xcp
@@ -27,7 +27,7 @@ class GRF:
         
         delta_zcp = self.zcp - self.z0
         
-        return self.kz * delta_zcp *(1+self.zcp_dot)
+        return self.kz * -delta_zcp *(1+self.zcp_dot/self.vmax)
         
 
     def sliding_force(self,F_normal):
@@ -129,7 +129,7 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
     dxF = mbs_data.dpt[1:, idpt]
     
     
-    ground_limit = 2.0 #taille des jambes tendues
+    ground_limit = 1.9 #taille des jambes tendues
     
     #initialisation des sensors de forces externes:
     
@@ -161,7 +161,7 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
     
     if ixF == Force_BallR:
         
-        if PxF[3]>=2 :
+        if PxF[3]- ground_limit >=0 :
             
             if tsim==0:
                 stiction_br =[True]
@@ -188,7 +188,7 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
     if ixF == Force_BallL:
         
         
-        if PxF[3]>=2 :
+        if PxF[3] - ground_limit >=0 :
             
             if tsim==0:
                 stiction_bl =[True]
@@ -217,7 +217,7 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
     if ixF == Force_HeelR:
         
      
-        if PxF[3]>=2 :
+        if PxF[3]- ground_limit >=0 :
             
             if tsim==0:
                 stiction_hr =[True]
@@ -244,7 +244,7 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
     if ixF == Force_HeelL:
         
         
-        if PxF[3]>=2 :
+        if PxF[3]- ground_limit >=0 :
             
             if tsim==0:
                 stiction_hl =[True]

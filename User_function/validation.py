@@ -9,6 +9,7 @@ Created on Thu Nov 10 14:38:35 2022
 ###validation des résultats intermédiaires 
 
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 import useful_functions as u_f
 
@@ -53,6 +54,9 @@ LlceHFL = np.zeros(100)
 LlceHAM = np.zeros(100)
 deltatheta = np.zeros(100)
 
+z_fn = np.zeros(100)
+vz_fn = np.zeros(100)
+
 
 for i in range (100):
     if i <=9 :
@@ -79,6 +83,8 @@ for i in range (100):
         LlceHAM[i] =0
         LfmHAM[i] = 0
         LfmGLU[i] = 0
+        z_fn[i] = 1.91
+        vz_fn[i] = 0.01
         
     elif i <= 19 :
         
@@ -104,6 +110,8 @@ for i in range (100):
         LlceHAM[i] =0.16
         LfmHAM[i] = 400
         LfmGLU[i] = 400
+        z_fn[i] = 1.9
+        vz_fn[i] = -0.01
         
     elif i <=29 :
         
@@ -130,6 +138,8 @@ for i in range (100):
         LlceHAM[i] =0
         LfmHAM[i] = 1400
         LfmGLU[i] = 550
+        z_fn[i] = 1.91
+        vz_fn[i] = 0.01
     
     elif i <= 39 :
         
@@ -156,6 +166,8 @@ for i in range (100):
         LlceHAM[i] =0.16
         LfmHAM[i] = 0
         LfmGLU[i] = 0
+        z_fn[i] = 1.9
+        vz_fn[i] = -0.01
     
     elif i <= 49 :
         
@@ -182,6 +194,8 @@ for i in range (100):
         LlceHAM[i] =0
         LfmHAM[i] = 400
         LfmGLU[i] = 400
+        z_fn[i] = 1.91
+        vz_fn[i] = 0.01
         
     elif i <= 59 :
         
@@ -208,6 +222,8 @@ for i in range (100):
         LlceHAM[i] =0.16
         LfmHAM[i] = 1400
         LfmGLU[i] = 550
+        z_fn[i] = 1.9
+        vz_fn[i] = -0.01
     
     elif i <= 69 :
         
@@ -233,6 +249,8 @@ for i in range (100):
         LlceHAM[i] =0
         LfmHAM[i] = 0
         LfmGLU[i] = 0
+        z_fn[i] = 1.91
+        vz_fn[i] = 0.01
         
     
     elif i <= 79 :
@@ -259,6 +277,8 @@ for i in range (100):
         LlceHAM[i] =0.16
         LfmHAM[i] = 400
         LfmGLU[i] = 400
+        z_fn[i] = 1.9
+        vz_fn[i] = -0.01
     
     elif i <= 89 :
         
@@ -284,6 +304,8 @@ for i in range (100):
         LlceHAM[i] =0
         LfmHAM[i] = 1400
         LfmGLU[i] = 550
+        z_fn[i] = 1.91
+        vz_fn[i] = 0.01
         
         
     elif i <= 99 :
@@ -311,6 +333,8 @@ for i in range (100):
         LlceHAM[i] =0.16
         LfmHAM[i] = 0
         LfmGLU[i] = 0
+        z_fn[i] = 1.9
+        vz_fn[i] = -0.01
         
 # force-length relation for se : ok
 
@@ -674,8 +698,68 @@ for i in range(100):
     
     #TA
     Stim_TA[i] = So + G_TA * LlceTA[i]
+
+
+#verification external force/ calcul de la force normal 
+
+class GRF:
+    def __init__(self, xcp, xcp_dot, x0, zcp, zcp_dot,z0=1.9, kx=8200, kz=78480, musl=0.8, must=0.9, vmax= 0.03):
+        
+        
+        self.xcp = xcp
+        self.zcp = zcp
+        self.xcp_dot = xcp_dot
+        self.zcp_dot = zcp_dot
+        self.x0 = x0
+        self.z0 = z0
+        self.kx = kx
+        self.kz = kz
+        self.musl = musl
+        self.must = must
+        self.vmax = vmax
+        
     
+    def vertical_force(self):
+        
+        delta_zcp = self.zcp - self.z0
+        
+        return self.kz * -delta_zcp *(1+self.zcp_dot/self.vmax)
+        
+
+    def sliding_force(self,F_normal):
+        
+        return -math.copysign(1, self.xcp_dot) * self.musl * F_normal
+
+    def stiction_force(self):
+        
+        delta_xcp = self.xcp-self.x0
+        delta_xcp_dot = self.xcp_dot / self.vmax
+        
+        return -self.kx * delta_xcp * (1 + math.copysign(1, delta_xcp) * delta_xcp_dot)
+
+    def forces(self):
+        
+        F_normal = self.vertical_force()
+        
+        if abs(self.xcp_dot) < (self.vmax/100):
+            f_st = self.stiction_force()
+            if f_st >= self.must * F_normal:
+                return F_normal,f_st
+            else:
+                return F_normal,0
+        else:
+            return F_normal, self.sliding_force(F_normal)
+
+GRForce_normal = GRF(0,0,0,z_fn[0],vz_fn[0])
+force_normal = np.zeros(100)
+for i in range(100):
+    GRForce_normal.zcp = z_fn[i]
+    GRForce_normal.zcp_dot = vz_fn[i]
+    force_normal[i] = GRForce_normal.forces()[0]
+    print(force_normal[i])
+
+
 
 # plot 
 import matplotlib.pyplot as plt
-plt.plot(time,Stim_TA)
+plt.plot(time,force_normal)

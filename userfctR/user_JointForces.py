@@ -35,7 +35,7 @@ time = np.zeros(1)
 n_muscle = 7  # Number of muscles
 n_articulation = 3 # number of articulations
 
-ground_limit = 2.0
+ground_limit = 1.9
 
 #Memories :
 
