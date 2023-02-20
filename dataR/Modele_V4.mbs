@@ -606,7 +606,7 @@
       <mass>1.25</mass>
       <com>
         <coordinates>
-          <x>0.14</x>
+          <x>0.02</x>
           <y>0.0</y>
           <z>0.0</z>
         </coordinates>
@@ -624,8 +624,8 @@
         <graphics>
           <x2D>
             <position>
-              <x>814.0</x>
-              <y>566.0</y>
+              <x>813.0</x>
+              <y>567.0</y>
             </position>
           </x2D>
           <x3D />
@@ -662,8 +662,8 @@
         <graphics>
           <x2D>
             <position>
-              <x>710.0</x>
-              <y>569.0</y>
+              <x>709.0</x>
+              <y>570.0</y>
             </position>
           </x2D>
           <x3D />
@@ -693,8 +693,8 @@
       <graphics>
         <x2D>
           <position>
-            <x>-25.0</x>
-            <y>-14.0</y>
+            <x>-26.0</x>
+            <y>-13.0</y>
           </position>
           <name_pos>
             <x>0.0</x>
@@ -707,20 +707,20 @@
           </size>
           <control_points>
             <control_point>
-              <x>124.0</x>
-              <y>-14.0</y>
+              <x>123.0</x>
+              <y>-13.0</y>
             </control_point>
             <control_point>
-              <x>124.0</x>
-              <y>23.0</y>
+              <x>123.0</x>
+              <y>24.0</y>
             </control_point>
             <control_point>
-              <x>-25.0</x>
-              <y>23.0</y>
+              <x>-26.0</x>
+              <y>24.0</y>
             </control_point>
             <control_point>
-              <x>-25.0</x>
-              <y>-14.0</y>
+              <x>-26.0</x>
+              <y>-13.0</y>
             </control_point>
           </control_points>
           <angle>0.0</angle>
@@ -1043,7 +1043,7 @@
       <mass>1.25</mass>
       <com>
         <coordinates>
-          <x>0.14</x>
+          <x>0.02</x>
           <y>0.0</y>
           <z>0.0</z>
         </coordinates>
@@ -1061,7 +1061,7 @@
         <graphics>
           <x2D>
             <position>
-              <x>441.0</x>
+              <x>440.0</x>
               <y>598.0</y>
             </position>
           </x2D>
@@ -1099,7 +1099,7 @@
         <graphics>
           <x2D>
             <position>
-              <x>336.0</x>
+              <x>335.0</x>
               <y>601.0</y>
             </position>
           </x2D>
@@ -1130,7 +1130,7 @@
       <graphics>
         <x2D>
           <position>
-            <x>-35.0</x>
+            <x>-36.0</x>
             <y>-19.0</y>
           </position>
           <name_pos>
@@ -1144,20 +1144,20 @@
           </size>
           <control_points>
             <control_point>
-              <x>89.0</x>
-              <y>-8.0</y>
+              <x>112.0</x>
+              <y>-19.0</y>
             </control_point>
             <control_point>
-              <x>89.0</x>
+              <x>112.0</x>
               <y>20.0</y>
             </control_point>
             <control_point>
-              <x>-35.0</x>
+              <x>-36.0</x>
               <y>20.0</y>
             </control_point>
             <control_point>
-              <x>-35.0</x>
-              <y>-8.0</y>
+              <x>-36.0</x>
+              <y>-19.0</y>
             </control_point>
           </control_points>
           <angle>0.0</angle>
