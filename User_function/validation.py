@@ -56,6 +56,9 @@ deltatheta = np.zeros(100)
 
 z_fn = np.zeros(100)
 vz_fn = np.zeros(100)
+x_fn = np.zeros(100)
+vx_fn = np.zeros(100)
+
 
 
 for i in range (100):
@@ -85,6 +88,7 @@ for i in range (100):
         LfmGLU[i] = 0
         z_fn[i] = 1.91
         vz_fn[i] = 0.01
+        x_fn[i] = 0
         
     elif i <= 19 :
         
@@ -112,6 +116,7 @@ for i in range (100):
         LfmGLU[i] = 400
         z_fn[i] = 1.9
         vz_fn[i] = -0.01
+        x_fn[i] = 0.01
         
     elif i <=29 :
         
@@ -140,6 +145,7 @@ for i in range (100):
         LfmGLU[i] = 550
         z_fn[i] = 1.91
         vz_fn[i] = 0.01
+        x_fn[i] = 0
     
     elif i <= 39 :
         
@@ -168,6 +174,7 @@ for i in range (100):
         LfmGLU[i] = 0
         z_fn[i] = 1.9
         vz_fn[i] = -0.01
+        x_fn[i] = 0.01
     
     elif i <= 49 :
         
@@ -196,6 +203,7 @@ for i in range (100):
         LfmGLU[i] = 400
         z_fn[i] = 1.91
         vz_fn[i] = 0.01
+        x_fn[i] = 0
         
     elif i <= 59 :
         
@@ -224,6 +232,7 @@ for i in range (100):
         LfmGLU[i] = 550
         z_fn[i] = 1.9
         vz_fn[i] = -0.01
+        x_fn[i] = 0.01
     
     elif i <= 69 :
         
@@ -251,6 +260,7 @@ for i in range (100):
         LfmGLU[i] = 0
         z_fn[i] = 1.91
         vz_fn[i] = 0.01
+        x_fn[i] = 0
         
     
     elif i <= 79 :
@@ -279,6 +289,7 @@ for i in range (100):
         LfmGLU[i] = 400
         z_fn[i] = 1.9
         vz_fn[i] = -0.01
+        x_fn[i] = 0.01
     
     elif i <= 89 :
         
@@ -306,6 +317,7 @@ for i in range (100):
         LfmGLU[i] = 550
         z_fn[i] = 1.91
         vz_fn[i] = 0.01
+        x_fn[i] = 0
         
         
     elif i <= 99 :
@@ -335,6 +347,10 @@ for i in range (100):
         LfmGLU[i] = 0
         z_fn[i] = 1.9
         vz_fn[i] = -0.01
+        x_fn[i] = 0.01
+
+vx_fn = -vz_fn
+pos_FP = 0.01
         
 # force-length relation for se : ok
 
@@ -700,7 +716,7 @@ for i in range(100):
     Stim_TA[i] = So + G_TA * LlceTA[i]
 
 
-#verification external force/ calcul de la force normal 
+#verification external force/ calcul de la force normal ok
 
 class GRF:
     def __init__(self, xcp, xcp_dot, x0, zcp, zcp_dot,z0=1.9, kx=8200, kz=78480, musl=0.8, must=0.9, vmax= 0.03):
@@ -728,7 +744,7 @@ class GRF:
 
     def sliding_force(self,F_normal):
         
-        return -math.copysign(1, self.xcp_dot) * self.musl * F_normal
+        return math.copysign(1, self.xcp_dot) * self.musl * F_normal
 
     def stiction_force(self):
         
@@ -750,16 +766,24 @@ class GRF:
         else:
             return F_normal, self.sliding_force(F_normal)
 
-GRForce_normal = GRF(0,0,0,z_fn[0],vz_fn[0])
+GRForce_normal = GRF(x_fn[0],vx_fn[0],pos_FP,z_fn[0],vz_fn[0])
 force_normal = np.zeros(100)
+sliding_force = np.zeros(100)
+stiction_force = np.zeros(100)
 for i in range(100):
     GRForce_normal.zcp = z_fn[i]
     GRForce_normal.zcp_dot = vz_fn[i]
+    GRForce_normal.xcp = x_fn[i]
+    GRForce_normal.xcp_dot = vx_fn[i]
     force_normal[i] = GRForce_normal.forces()[0]
-    print(force_normal[i])
+    
 
+#verification external forces : sliding force ok
+    sliding_force[i] = GRForce_normal.sliding_force(force_normal[i])
 
-
+#verification external forces : stiction force ok
+    stiction_force[i] = GRForce_normal.stiction_force()
+    
 # plot 
 import matplotlib.pyplot as plt
-plt.plot(time,force_normal)
+plt.plot(time,stiction_force)

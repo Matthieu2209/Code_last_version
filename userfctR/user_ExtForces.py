@@ -32,7 +32,7 @@ class GRF:
 
     def sliding_force(self,F_normal):
         
-        return -math.copysign(1, self.xcp_dot) * self.musl * F_normal
+        return math.copysign(1, self.xcp_dot) * self.musl * F_normal
 
     def stiction_force(self):
         
