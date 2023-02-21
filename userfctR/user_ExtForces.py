@@ -41,23 +41,30 @@ class GRF:
         
         return -self.kx * delta_xcp * (1 + math.copysign(1, delta_xcp) * delta_xcp_dot)
 
-    def forces(self):
-        
-        F_normal = self.vertical_force()
-        
-        if abs(self.xcp_dot) < (self.vmax/100):
-            f_st = self.stiction_force()
-            if f_st >= self.must * F_normal:
-                return F_normal,f_st
-            else:
-                return F_normal,0
-        else:
-            return F_normal, self.sliding_force(F_normal)
+
+def Stiction_flipflop(stick,slide):
+    if stick == True and slide == False:
+        return True 
+    elif stick == False and slide == True:
+        return False 
+    else :
+        raise NameError('Problems with the flip-flop function')
 
 stiction_br = False
+stick_br = False
+slide_br = False
+
 stiction_bl = False
+stick_bl = False
+slide_bl = False
+
 stiction_hr = False
+stick_hr = False
+slide_hr = False
+
 stiction_hl = False
+stick_hl = False
+slide_hl = False
 
 x0_BallR=0 #Position x ou la stiction est engagée pour le ball R
 x0_BallL=0 #Position x ou la stiction est engagée pour le ball L 
@@ -130,6 +137,7 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
     
     
     ground_limit = 1.9 #taille des jambes tendues
+    v_limit = 0.01 # vitesse en dessous de laquelle on est en stiction 
     
     #initialisation des sensors de forces externes:
     
@@ -141,9 +149,18 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
     #global parameters :
     
     global stiction_br
+    global slide_br
+    global stick_br
     global stiction_bl
+    global slide_bl
+    global stick_bl
     global stiction_hr
+    global slide_hr
+    global stick_hr
     global stiction_hl
+    global slide_hl
+    global stick_hl
+        
     global x0_BallR
     global x0_BallL
     global x0_HeelR
@@ -162,26 +179,40 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
     if ixF == Force_BallR:
         
         if PxF[3]- ground_limit >=0 :
-            
-            if tsim==0:
-                stiction_br =[True]
-            elif dt!=0 :
-                stiction_br.append(True)
-                
-                if stiction_br[-1] and not stiction_br[-2] :
-                    
-                    x0_BallR=PxF[1]
-            
+                  
             GRForce_BallR = GRF(PxF[1],VxF[1],x0_BallR,PxF[3],VxF[3])
-            Fz = GRForce_BallR.forces()[0]
-            Fx = GRForce_BallR.forces()[1]
+            if stiction_br == True : # on est en stiction --> Static friction model 
+                Fz = GRForce_BallR.vertical_force()
+                Fx = GRForce_BallR.stiction_force()
+                
+                if abs(Fx)-abs(Fz*GRForce_BallR.must) >= 0:
+                    slide_br=True
+                    stick_br=False
+                else :
+                    stick_br = True
+                    slide_br = False
+                
+                stiction_br = Stiction_flipflop(stick_br, slide_br)
+            
+            else : # on est en sliding --> Kinetic friction model
+                
+                Fz = GRForce_BallR.vertical_force()
+                Fx = GRForce_BallR.sliding_force(Fz)
+                x0_BallR = PxF[1]
+                
+                if abs(VxF[1]) - v_limit <= 0:
+                    stick_br = True
+                    slide_br = False
+                else :
+                    stick_br = False
+                    slide_br = True
+                
+                stiction_br = Stiction_flipflop(stick_br, slide_br)
         
         else :
             
-            if tsim==0:
-                stiction_br = [False]
-            elif dt!=0 :
-                stiction_br.append(False)
+            Fz = 0
+            Fx = 0
                 
     ### BallL
         
@@ -190,27 +221,39 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
         
         if PxF[3] - ground_limit >=0 :
             
-            if tsim==0:
-                stiction_bl =[True]
-            elif dt!=0 :
-                stiction_bl.append(True)
-                
-                if stiction_bl[-1] and not stiction_bl[-2] :
-                    
-                    x0_BallL=PxF[1]
-                    
-            
             GRForce_BallL = GRF(PxF[1],VxF[1],x0_BallL,PxF[3],VxF[3])
-            Fz = GRForce_BallL.forces()[0]
-            Fx = GRForce_BallL.forces()[1]
+            if stiction_bl == True : # on est en stiction --> Static friction model 
+                Fz = GRForce_BallL.vertical_force()
+                Fx = GRForce_BallL.stiction_force()
+                
+                if abs(Fx)-abs(Fz*GRForce_BallL.must) >= 0:
+                    slide_bl=True
+                    stick_bl=False
+                else :
+                    stick_bl = True
+                    slide_bl = False
+                
+                stiction_bl = Stiction_flipflop(stick_bl, slide_bl)
             
+            else : # on est en sliding --> Kinetic friction model
+                
+                Fz = GRForce_BallL.vertical_force()
+                Fx = GRForce_BallL.sliding_force(Fz)
+                x0_BallL = PxF[1]
+                
+                if abs(VxF[1]) - v_limit <= 0:
+                    stick_bl = True
+                    slide_bl = False
+                else :
+                    stick_bl = False
+                    slide_bl = True
+                
+                stiction_bl = Stiction_flipflop(stick_bl, slide_bl)
         
         else :
             
-            if tsim==0:
-                stiction_bl = [False]
-            elif dt!=0 :
-                stiction_bl.append(False)
+            Fz = 0
+            Fx = 0
     
     ### HeelR
     
@@ -219,25 +262,39 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
      
         if PxF[3]- ground_limit >=0 :
             
-            if tsim==0:
-                stiction_hr =[True]
-            elif dt!=0 :
-                stiction_hr.append(True)
-                
-                if stiction_hr[-1] and not stiction_hr[-2] :
-                    
-                    x0_HeelR=PxF[1]
-            
             GRForce_HeelR = GRF(PxF[1],VxF[1],x0_HeelR,PxF[3],VxF[3])
-            Fz = GRForce_HeelR.forces()[0]
-            Fx = GRForce_HeelR.forces()[1]
+            if stiction_hr == True : # on est en stiction --> Static friction model 
+                Fz = GRForce_HeelR.vertical_force()
+                Fx = GRForce_HeelR.stiction_force()
+                
+                if abs(Fx)-abs(Fz*GRForce_HeelR.must) >= 0:
+                    slide_hr=True
+                    stick_hr=False
+                else :
+                    stick_hr = True
+                    slide_hr = False
+                
+                stiction_hr = Stiction_flipflop(stick_hr, slide_hr)
+            
+            else : # on est en sliding --> Kinetic friction model
+                
+                Fz = GRForce_HeelR.vertical_force()
+                Fx = GRForce_HeelR.sliding_force(Fz)
+                x0_HeelR = PxF[1]
+                
+                if abs(VxF[1]) - v_limit <= 0:
+                    stick_hr = True
+                    slide_hr = False
+                else :
+                    stick_hr = False
+                    slide_hr = True
+                
+                stiction_hr = Stiction_flipflop(stick_hr, slide_hr)
         
         else :
             
-            if tsim==0:
-                stiction_hr = [False]
-            elif dt!=0 :
-                stiction_hr.append(False)
+            Fz = 0
+            Fx = 0
     
     ### HeelL
         
@@ -245,27 +302,41 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
         
         
         if PxF[3]- ground_limit >=0 :
-            
-            if tsim==0:
-                stiction_hl =[True]
-            elif dt!=0 :
-                stiction_hl.append(True)
-                
-                if stiction_hl[-1] and not stiction_hl[-2] :
-                    
-                    x0_HeelL=PxF[1]
-            
+                        
             GRForce_HeelL = GRF(PxF[1],VxF[1],x0_HeelL,PxF[3],VxF[3])
-            Fz = GRForce_HeelL.forces()[0]
-            Fx = GRForce_HeelL.forces()[1]
+            if stiction_hl == True : # on est en stiction --> Static friction model 
+                Fz = GRForce_HeelL.vertical_force()
+                Fx = GRForce_HeelL.stiction_force()
+                
+                if abs(Fx)-abs(Fz*GRForce_HeelL.must) >= 0:
+                    slide_hl=True
+                    stick_hl=False
+                else :
+                    stick_hl = True
+                    slide_hl = False
+                
+                stiction_hl = Stiction_flipflop(stick_hl, slide_hl)
+            
+            else : # on est en sliding --> Kinetic friction model
+                
+                Fz = GRForce_HeelL.vertical_force()
+                Fx = GRForce_HeelL.sliding_force(Fz)
+                x0_HeelL = PxF[1]
+                
+                if abs(VxF[1]) - v_limit <= 0:
+                    stick_hl = True
+                    slide_hl = False
+                else :
+                    stick_hl = False
+                    slide_hl = True
+                
+                stiction_hl = Stiction_flipflop(stick_hl, slide_hl)
 
     
         else :
             
-            if tsim==0:
-                stiction_hl = [False]
-            elif dt!=0 :
-                stiction_hl.append(False)
+            Fz = 0
+            Fx = 0
     
 
     
