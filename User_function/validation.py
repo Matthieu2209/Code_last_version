@@ -86,9 +86,10 @@ for i in range (100):
         LlceHAM[i] =0
         LfmHAM[i] = 0
         LfmGLU[i] = 0
-        z_fn[i] = 1.91
-        vz_fn[i] = 0.01
+        z_fn[i] = 1.905
+        vz_fn[i] = 0
         x_fn[i] = 0
+        vx_fn[i] = 0
         
     elif i <= 19 :
         
@@ -114,9 +115,10 @@ for i in range (100):
         LlceHAM[i] =0.16
         LfmHAM[i] = 400
         LfmGLU[i] = 400
-        z_fn[i] = 1.9
-        vz_fn[i] = -0.01
-        x_fn[i] = 0.01
+        z_fn[i] = 1.65
+        vz_fn[i] = -1.5
+        x_fn[i] = 2
+        vx_fn[i] = 2
         
     elif i <=29 :
         
@@ -143,9 +145,10 @@ for i in range (100):
         LlceHAM[i] =0
         LfmHAM[i] = 1400
         LfmGLU[i] = 550
-        z_fn[i] = 1.91
-        vz_fn[i] = 0.01
-        x_fn[i] = 0
+        z_fn[i] = 1.905
+        vz_fn[i] = 1.5
+        x_fn[i] = 4
+        vx_fn[i] = 2
     
     elif i <= 39 :
         
@@ -172,9 +175,10 @@ for i in range (100):
         LlceHAM[i] =0.16
         LfmHAM[i] = 0
         LfmGLU[i] = 0
-        z_fn[i] = 1.9
-        vz_fn[i] = -0.01
-        x_fn[i] = 0.01
+        z_fn[i] = 1.65
+        vz_fn[i] = 0
+        x_fn[i] = 6
+        vx_fn[i] = 2
     
     elif i <= 49 :
         
@@ -201,9 +205,10 @@ for i in range (100):
         LlceHAM[i] =0
         LfmHAM[i] = 400
         LfmGLU[i] = 400
-        z_fn[i] = 1.91
-        vz_fn[i] = 0.01
-        x_fn[i] = 0
+        z_fn[i] = 1.905
+        vz_fn[i] = -1.5
+        x_fn[i] = 8
+        vx_fn[i] = 2
         
     elif i <= 59 :
         
@@ -230,9 +235,10 @@ for i in range (100):
         LlceHAM[i] =0.16
         LfmHAM[i] = 1400
         LfmGLU[i] = 550
-        z_fn[i] = 1.9
-        vz_fn[i] = -0.01
-        x_fn[i] = 0.01
+        z_fn[i] = 1.65
+        vz_fn[i] = 1.5
+        x_fn[i] = 10
+        vx_fn[i] = 2
     
     elif i <= 69 :
         
@@ -258,9 +264,10 @@ for i in range (100):
         LlceHAM[i] =0
         LfmHAM[i] = 0
         LfmGLU[i] = 0
-        z_fn[i] = 1.91
-        vz_fn[i] = 0.01
-        x_fn[i] = 0
+        z_fn[i] = 1.905
+        vz_fn[i] = 0
+        x_fn[i] = 12
+        vx_fn[i] = 2
         
     
     elif i <= 79 :
@@ -287,9 +294,10 @@ for i in range (100):
         LlceHAM[i] =0.16
         LfmHAM[i] = 400
         LfmGLU[i] = 400
-        z_fn[i] = 1.9
-        vz_fn[i] = -0.01
-        x_fn[i] = 0.01
+        z_fn[i] = 1.65
+        vz_fn[i] = -1.5
+        x_fn[i] = 14
+        vx_fn[i] = 2
     
     elif i <= 89 :
         
@@ -315,9 +323,10 @@ for i in range (100):
         LlceHAM[i] =0
         LfmHAM[i] = 1400
         LfmGLU[i] = 550
-        z_fn[i] = 1.91
-        vz_fn[i] = 0.01
-        x_fn[i] = 0
+        z_fn[i] = 1.905
+        vz_fn[i] = 1.5
+        x_fn[i] = 16
+        vx_fn[i] = 2
         
         
     elif i <= 99 :
@@ -345,11 +354,11 @@ for i in range (100):
         LlceHAM[i] =0.16
         LfmHAM[i] = 0
         LfmGLU[i] = 0
-        z_fn[i] = 1.9
-        vz_fn[i] = -0.01
-        x_fn[i] = 0.01
+        z_fn[i] = 1.65
+        vz_fn[i] = 0
+        x_fn[i] = 18
+        vx_fn[i] = 2
 
-vx_fn = -vz_fn
 pos_FP = 0.01
         
 # force-length relation for se : ok
@@ -362,8 +371,7 @@ for i in range(100):
     else:
         f_see[i] = 0
     
-    if i ==9 :
-        print(f_see)
+
 
 # force-length relation for be : ok
 
@@ -376,8 +384,7 @@ for i in range(100):
     else :
         F_be[i]=0
     
-    if i ==9 :
-        print(F_be)
+
 
 # force-length relation for pe : ok
 
@@ -390,8 +397,7 @@ for i in range(100):
     else :
         F_pe_star[i] = 0
     
-    if i ==9 :
-        print(F_pe_star)
+
 
 # force-length relation for ce : ok
 
@@ -402,8 +408,7 @@ for i in range(100):
     #if f_l[i] < m_layer.fl_inf:
     #    f_l[i] = m_layer.fl_inf
     
-    if i ==9 :
-        print(f_l)
+
 
 
 #excitation-contraction coupling : ok
@@ -420,8 +425,7 @@ for i in range(100):
     else : 
         
         Act[i]= u_f.low_filter(Stim[i], tau, 1, Act[i-1])
-        if i ==9 :
-            print(Act)
+
 
 # calcul de fv : ok
 
@@ -441,8 +445,6 @@ for i in range(100):
     else :
     
         f_v[i] = (f_see[i] + F_be[i])/(Act[i]*f_l[i] + F_pe_star[i])
-        if i ==9 :
-            print(f_v)
 
 # calcul de v_ce à partir de la relation force-vitesse inverse : ok 
 #(possibilité de tester les 3 conditions en changeant les variables fv)
@@ -563,7 +565,6 @@ if art == knee :
         else : # raise an error if unrealistic values 
             
             ext_torque[i] = -100
-        print(ext_torque[i])
 
 if art == ankle :
     
@@ -597,7 +598,6 @@ if art == ankle :
         else : # raise an error if unrealistic values 
             
             torque_j[i]=-200
-        print(torque_j[i])
         
 if art == hip :
     
@@ -617,7 +617,7 @@ if art == hip :
         else : # raise an error if unrealistic values 
                 
             ext_torque[i]=-200
-        print(ext_torque[i])
+        
         
         
 # Verification Stance reflex
@@ -717,9 +717,16 @@ for i in range(100):
 
 
 #verification external force/ calcul de la force normal ok
+#verification external forces : sliding force ok
+#verification external forces : stiction force ok
+
+#Verification de tout le ground friction model 
+Fz_ground = np.zeros(100)
+Fx_ground = np.zeros(100)
+Stiction = np.zeros(100)
 
 class GRF:
-    def __init__(self, xcp, xcp_dot, x0, zcp, zcp_dot,z0=1.9, kx=8200, kz=78480, musl=0.8, must=0.9, vmax= 0.03):
+    def __init__(self, xcp, xcp_dot, x0, zcp, zcp_dot,z0=1.9, kx=7848, kz=78480, musl=0.8, must=0.9, vmax=0.03):
         
         
         self.xcp = xcp
@@ -739,7 +746,12 @@ class GRF:
         
         delta_zcp = self.zcp - self.z0
         
-        return self.kz * -delta_zcp *(1+self.zcp_dot/self.vmax)
+        if self.zcp_dot/self.vmax >= -1:
+        
+            return self.kz * -delta_zcp *(1+self.zcp_dot/self.vmax)
+        
+        else:
+            return 0
         
 
     def sliding_force(self,F_normal):
@@ -753,37 +765,60 @@ class GRF:
         
         return -self.kx * delta_xcp * (1 + math.copysign(1, delta_xcp) * delta_xcp_dot)
 
-    def forces(self):
-        
-        F_normal = self.vertical_force()
-        
-        if abs(self.xcp_dot) < (self.vmax/100):
-            f_st = self.stiction_force()
-            if f_st >= self.must * F_normal:
-                return F_normal,f_st
-            else:
-                return F_normal,0
-        else:
-            return F_normal, self.sliding_force(F_normal)
-
-GRForce_normal = GRF(x_fn[0],vx_fn[0],pos_FP,z_fn[0],vz_fn[0])
-force_normal = np.zeros(100)
-sliding_force = np.zeros(100)
-stiction_force = np.zeros(100)
+def Stiction_flipflop(stick,slide):
+    if stick == True and slide == False:
+        return True 
+    elif stick == False and slide == True:
+        return False 
+    else :
+        raise NameError('Problems with the flip-flop function')
+slide_br = False
+Stick_br = False
+ground_limit = 1.9
+v_limit = 0.01
+x0_BallR = 0
+stiction_br = False
 for i in range(100):
-    GRForce_normal.zcp = z_fn[i]
-    GRForce_normal.zcp_dot = vz_fn[i]
-    GRForce_normal.xcp = x_fn[i]
-    GRForce_normal.xcp_dot = vx_fn[i]
-    force_normal[i] = GRForce_normal.forces()[0]
     
-
-#verification external forces : sliding force ok
-    sliding_force[i] = GRForce_normal.sliding_force(force_normal[i])
-
-#verification external forces : stiction force ok
-    stiction_force[i] = GRForce_normal.stiction_force()
+    if z_fn[i] - ground_limit >=0 :
+              
+        GRForce_BallR = GRF(x_fn[i],vx_fn[i],x0_BallR,z_fn[i],vz_fn[i])
+        Fz_ground[i] = GRForce_BallR.vertical_force()
+        if stiction_br == True : # on est en stiction --> Static friction model 
+            Fx_ground[i] = GRForce_BallR.stiction_force()
+            
+            if abs(Fx_ground[i])-abs(Fz_ground[i]*GRForce_BallR.must) >= 0:
+                slide_br=True
+                stick_br=False
+            else :
+                stick_br = True
+                slide_br = False
+            
+            stiction_br = Stiction_flipflop(stick_br, slide_br)
+        
+        else : # on est en sliding --> Kinetic friction model
+            
+            Fx_ground[i] = GRForce_BallR.sliding_force(Fz_ground[i])
+            x0_BallR = x_fn[i]
+            
+            if abs(vx_fn[i]) - v_limit <= 0:
+                stick_br = True
+                slide_br = False
+            else :
+                stick_br = False
+                slide_br = True
+            
+            stiction_br = Stiction_flipflop(stick_br, slide_br)
+        print("iteration :",i,"contact")
+        print(Fx_ground[i])
+    else :
+        
+        Fz_ground[i] = 0
+        Fx_ground[i] = 0
+        stiction_br = False
+        print("iteration :",i,"no contact")
+   
     
 # plot 
 import matplotlib.pyplot as plt
-plt.plot(time,stiction_force)
+plt.plot(time,Fx_ground)

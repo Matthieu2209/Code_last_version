@@ -7,7 +7,7 @@ import numpy as np
 import math
 
 class GRF:
-    def __init__(self, xcp, xcp_dot, x0, zcp, zcp_dot,z0=1.9, kx=8200, kz=78480, musl=0.8, must=0.9, vmax=0.03):
+    def __init__(self, xcp, xcp_dot, x0, zcp, zcp_dot,z0=1.9, kx=7848, kz=78480, musl=0.8, must=0.9, vmax=0.03):
         
         
         self.xcp = xcp
@@ -27,7 +27,12 @@ class GRF:
         
         delta_zcp = self.zcp - self.z0
         
-        return self.kz * -delta_zcp *(1+self.zcp_dot/self.vmax)
+        if self.zcp_dot/self.vmax >= -1:
+        
+            return self.kz * -delta_zcp *(1+self.zcp_dot/self.vmax)
+        
+        else:
+            return 0
         
 
     def sliding_force(self,F_normal):
@@ -213,6 +218,7 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
             
             Fz = 0
             Fx = 0
+            stiction_br = False
                 
     ### BallL
         
@@ -254,6 +260,7 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
             
             Fz = 0
             Fx = 0
+            stiction_bl = False
     
     ### HeelR
     
@@ -295,6 +302,7 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
             
             Fz = 0
             Fx = 0
+            stiction_hr = False
     
     ### HeelL
         
@@ -337,7 +345,7 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
             
             Fz = 0
             Fx = 0
-    
+            stiction_hl = False
 
     
     
