@@ -37,7 +37,10 @@ class GRF:
 
     def sliding_force(self,F_normal):
         
-        return math.copysign(1, self.xcp_dot) * self.musl * F_normal
+        if self.xcp_dot != 0 :
+            return math.copysign(1, self.xcp_dot) * self.musl * F_normal
+        else :
+            return 0
 
     def stiction_force(self):
         
@@ -56,18 +59,22 @@ def Stiction_flipflop(stick,slide):
         raise NameError('Problems with the flip-flop function')
 
 stiction_br = False
+stiction_br_prec = True
 stick_br = False
 slide_br = False
 
 stiction_bl = False
+stiction_bl_prec = True
 stick_bl = False
 slide_bl = False
 
 stiction_hr = False
+stiction_hr_prec = True
 stick_hr = False
 slide_hr = False
 
 stiction_hl = False
+stiction_hl_prec = True
 stick_hl = False
 slide_hl = False
 
@@ -154,15 +161,19 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
     #global parameters :
     
     global stiction_br
+    global stiction_br_prec
     global slide_br
     global stick_br
     global stiction_bl
+    global stiction_bl_prec
     global slide_bl
     global stick_bl
     global stiction_hr
+    global stiction_hr_prec
     global slide_hr
     global stick_hr
     global stiction_hl
+    global stiction_hl_prec
     global slide_hl
     global stick_hl
         
@@ -197,7 +208,8 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                     stick_br = True
                     slide_br = False
                 
-                stiction_br = Stiction_flipflop(stick_br, slide_br)
+                stiction_br = stiction_br_prec
+                stiction_br_prec = Stiction_flipflop(stick_br, slide_br)
             
             else : # on est en sliding --> Kinetic friction model
                 
@@ -212,13 +224,16 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                     stick_br = False
                     slide_br = True
                 
-                stiction_br = Stiction_flipflop(stick_br, slide_br)
+                stiction_br = stiction_br_prec
+                stiction_br_prec = Stiction_flipflop(stick_br, slide_br)
         
         else :
             
             Fz = 0
             Fx = 0
             stiction_br = False
+            stick_br = False
+            slide_br = False
                 
     ### BallL
         
@@ -239,7 +254,8 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                     stick_bl = True
                     slide_bl = False
                 
-                stiction_bl = Stiction_flipflop(stick_bl, slide_bl)
+                stiction_bl = stiction_bl_prec
+                stiction_bl_prec = Stiction_flipflop(stick_bl, slide_bl)
             
             else : # on est en sliding --> Kinetic friction model
                 
@@ -254,13 +270,16 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                     stick_bl = False
                     slide_bl = True
                 
-                stiction_bl = Stiction_flipflop(stick_bl, slide_bl)
+                stiction_bl = stiction_bl_prec
+                stiction_bl_prec = Stiction_flipflop(stick_bl, slide_bl)
         
         else :
             
             Fz = 0
             Fx = 0
             stiction_bl = False
+            stick_bl = False
+            slide_bl = False
     
     ### HeelR
     
@@ -281,7 +300,8 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                     stick_hr = True
                     slide_hr = False
                 
-                stiction_hr = Stiction_flipflop(stick_hr, slide_hr)
+                stiction_hr = stiction_hr_prec
+                stiction_hr_prec = Stiction_flipflop(stick_hr, slide_hr)
             
             else : # on est en sliding --> Kinetic friction model
                 
@@ -296,13 +316,16 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                     stick_hr = False
                     slide_hr = True
                 
-                stiction_hr = Stiction_flipflop(stick_hr, slide_hr)
+                stiction_hr = stiction_hr_prec
+                stiction_hr_prec = Stiction_flipflop(stick_hr, slide_hr)
         
         else :
             
             Fz = 0
             Fx = 0
             stiction_hr = False
+            stick_hr = False
+            slide_hr = False
     
     ### HeelL
         
@@ -323,7 +346,8 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                     stick_hl = True
                     slide_hl = False
                 
-                stiction_hl = Stiction_flipflop(stick_hl, slide_hl)
+                stiction_hl = stiction_hl_prec
+                stiction_hl_prec = Stiction_flipflop(stick_hl, slide_hl)
             
             else : # on est en sliding --> Kinetic friction model
                 
@@ -338,7 +362,8 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                     stick_hl = False
                     slide_hl = True
                 
-                stiction_hl = Stiction_flipflop(stick_hl, slide_hl)
+                stiction_hl = stiction_hl_prec
+                stiction_hl_prec = Stiction_flipflop(stick_hl, slide_hl)
 
     
         else :
@@ -346,6 +371,8 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
             Fz = 0
             Fx = 0
             stiction_hl = False
+            stick_hl = False
+            slide_hl = False
 
     
     

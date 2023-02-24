@@ -723,7 +723,14 @@ for i in range(100):
 #Verification de tout le ground friction model 
 Fz_ground = np.zeros(100)
 Fx_ground = np.zeros(100)
-Stiction = np.zeros(100)
+
+Fz_d= np.zeros(10)
+Fx_d = np.zeros(10)
+z_fn = [1.905,1.905,1.65,1.65,1.905,1.905,1.65,1.65,1.905,1.905]
+vz_fn = [0,-1.5,1.5,0,-1.5,1.5,0,-1.5,1.5,0]
+x_fn=[0,0,2,2,4,4,6,6,8,8]
+vx_fn=[0,0.001,2,0.001,2,0.001,2,0.001,2,0.001]
+
 
 class GRF:
     def __init__(self, xcp, xcp_dot, x0, zcp, zcp_dot,z0=1.9, kx=7848, kz=78480, musl=0.8, must=0.9, vmax=0.03):
@@ -755,8 +762,10 @@ class GRF:
         
 
     def sliding_force(self,F_normal):
-        
-        return math.copysign(1, self.xcp_dot) * self.musl * F_normal
+        if self.xcp_dot != 0 :
+            return math.copysign(1, self.xcp_dot) * self.musl * F_normal
+        else :
+            return 0
 
     def stiction_force(self):
         
@@ -778,27 +787,29 @@ ground_limit = 1.9
 v_limit = 0.01
 x0_BallR = 0
 stiction_br = False
-for i in range(100):
-    
+stiction_br_prec = True
+for i in range(10):
+ 
     if z_fn[i] - ground_limit >=0 :
               
         GRForce_BallR = GRF(x_fn[i],vx_fn[i],x0_BallR,z_fn[i],vz_fn[i])
-        Fz_ground[i] = GRForce_BallR.vertical_force()
+        Fz_d[i] = GRForce_BallR.vertical_force()
         if stiction_br == True : # on est en stiction --> Static friction model 
-            Fx_ground[i] = GRForce_BallR.stiction_force()
+            Fx_d[i] = GRForce_BallR.stiction_force()
             
-            if abs(Fx_ground[i])-abs(Fz_ground[i]*GRForce_BallR.must) >= 0:
+            if abs(Fx_d[i])-abs(Fz_d[i]*GRForce_BallR.must) >= 0:
                 slide_br=True
                 stick_br=False
             else :
                 stick_br = True
                 slide_br = False
             
-            stiction_br = Stiction_flipflop(stick_br, slide_br)
+            stiction_br = stiction_br_prec
+            stiction_br_prec = Stiction_flipflop(stick_br, slide_br)
         
         else : # on est en sliding --> Kinetic friction model
             
-            Fx_ground[i] = GRForce_BallR.sliding_force(Fz_ground[i])
+            Fx_d[i] = GRForce_BallR.sliding_force(Fz_d[i])
             x0_BallR = x_fn[i]
             
             if abs(vx_fn[i]) - v_limit <= 0:
@@ -808,16 +819,52 @@ for i in range(100):
                 stick_br = False
                 slide_br = True
             
-            stiction_br = Stiction_flipflop(stick_br, slide_br)
-        print("iteration :",i,"contact")
-        print(Fx_ground[i])
+            stiction_br = stiction_br_prec
+            stiction_br_prec = Stiction_flipflop(stick_br, slide_br)
+        print("iteration :",i,"contact",stiction_br)
+        
     else :
         
-        Fz_ground[i] = 0
-        Fx_ground[i] = 0
+        Fz_d[i] = 0
+        Fx_d[i] = 0
+        stiction_br_prec = True 
         stiction_br = False
-        print("iteration :",i,"no contact")
-   
+        stick_br = False
+        slide_br = False
+        print("iteration :",i,"no contact",stiction_br)
+    print(Fz_d[i],Fx_d[i])
+
+for i in range(100):
+    if i <=9 :
+        Fz_ground[i] = Fz_d[0]
+        Fx_ground[i] = Fx_d[0]
+    elif i <=19 :
+        Fz_ground[i] = Fz_d[1]
+        Fx_ground[i] = Fx_d[1]
+    elif i <=29 :
+        Fz_ground[i] = Fz_d[2]
+        Fx_ground[i] = Fx_d[2]
+    elif i <=39 :
+        Fz_ground[i] = Fz_d[3]
+        Fx_ground[i] = Fx_d[3]
+    elif i <=49 :
+        Fz_ground[i] = Fz_d[4]
+        Fx_ground[i] = Fx_d[4]
+    elif i <=59 :
+        Fz_ground[i] = Fz_d[5]
+        Fx_ground[i] = Fx_d[5]
+    elif i <=69 :
+        Fz_ground[i] = Fz_d[6]
+        Fx_ground[i] = Fx_d[6]
+    elif i <=79 :
+        Fz_ground[i] = Fz_d[7]
+        Fx_ground[i] = Fx_d[7]
+    elif i <=89 :
+        Fz_ground[i] = Fz_d[8]
+        Fx_ground[i] = Fx_d[8]
+    elif i <=99 :
+        Fz_ground[i] = Fz_d[9]
+        Fx_ground[i] = Fx_d[9]
     
 # plot 
 import matplotlib.pyplot as plt
