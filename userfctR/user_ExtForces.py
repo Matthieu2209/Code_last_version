@@ -7,7 +7,7 @@ import numpy as np
 import math
 
 class GRF:
-    def __init__(self, xcp, xcp_dot, x0, zcp, zcp_dot,z0=1.9, kx=7848, kz=78480, musl=0.8, must=0.9, vmax=0.03):
+    def __init__(self, xcp, xcp_dot, x0, zcp, zcp_dot,z0=1.79503-2.332694446494088e-06, kx=7848, kz=78480, musl=0.8, must=0.9, vmax=0.03):
         
         
         self.xcp = xcp
@@ -148,7 +148,7 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
     dxF = mbs_data.dpt[1:, idpt]
     
     
-    ground_limit = 1.9 #taille des jambes tendues
+    ground_limit = 1.79503 - 2.332694446494088e-06 #taille des jambes tendues
     v_limit = 0.01 # vitesse en dessous de laquelle on est en stiction 
     
     #initialisation des sensors de forces externes:
@@ -210,6 +210,8 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                 
                 stiction_br = stiction_br_prec
                 stiction_br_prec = Stiction_flipflop(stick_br, slide_br)
+                
+
             
             else : # on est en sliding --> Kinetic friction model
                 
@@ -226,7 +228,8 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                 
                 stiction_br = stiction_br_prec
                 stiction_br_prec = Stiction_flipflop(stick_br, slide_br)
-        
+            #print("contact_br")
+            #print("BR:", Fz,Fx)
         else :
             
             Fz = 0
@@ -234,6 +237,9 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
             stiction_br = False
             stick_br = False
             slide_br = False
+        
+        #mbs_data.set_output(Fx, "BallR Force x")
+        #mbs_data.set_output(Fz, "BallR Force z")
                 
     ### BallL
         
@@ -256,6 +262,7 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                 
                 stiction_bl = stiction_bl_prec
                 stiction_bl_prec = Stiction_flipflop(stick_bl, slide_bl)
+
             
             else : # on est en sliding --> Kinetic friction model
                 
@@ -272,7 +279,8 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                 
                 stiction_bl = stiction_bl_prec
                 stiction_bl_prec = Stiction_flipflop(stick_bl, slide_bl)
-        
+            #print("contact_bl")
+            #print("BL:", Fz,Fx)
         else :
             
             Fz = 0
@@ -280,6 +288,10 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
             stiction_bl = False
             stick_bl = False
             slide_bl = False
+        
+        #mbs_data.set_output(Fx, "BallL Force x")
+        #mbs_data.set_output(Fz, "BallL Force z")
+        
     
     ### HeelR
     
@@ -302,6 +314,7 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                 
                 stiction_hr = stiction_hr_prec
                 stiction_hr_prec = Stiction_flipflop(stick_hr, slide_hr)
+                
             
             else : # on est en sliding --> Kinetic friction model
                 
@@ -318,6 +331,8 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                 
                 stiction_hr = stiction_hr_prec
                 stiction_hr_prec = Stiction_flipflop(stick_hr, slide_hr)
+            #print("contact_hr")
+            #print("HR:", Fz,Fx)
         
         else :
             
@@ -326,6 +341,10 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
             stiction_hr = False
             stick_hr = False
             slide_hr = False
+        
+        #mbs_data.set_output(Fx, "HeelR Force x")
+        #mbs_data.set_output(Fz, "HeelR Force z")
+        
     
     ### HeelL
         
@@ -364,6 +383,8 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
                 
                 stiction_hl = stiction_hl_prec
                 stiction_hl_prec = Stiction_flipflop(stick_hl, slide_hl)
+            #print("contact_hl")
+            #print("HL:", Fz,Fx)
 
     
         else :
@@ -373,8 +394,11 @@ def user_ExtForces(PxF, RxF, VxF, OMxF, AxF, OMPxF, mbs_data, tsim, ixF):
             stiction_hl = False
             stick_hl = False
             slide_hl = False
-
+        
+        #mbs_data.set_output(Fx, "HeelL Force x")
+        #mbs_data.set_output(Fz, "HeelL Force z")
     
+
     
     Swr=np.zeros(9+1)
     Swr[1:]=np.r_[Fx,Fy,Fz,Mx,My,Mz,dxF]

@@ -35,37 +35,31 @@ def low_filter(stimulation,tau,diff_t,last_activation):
     
 
 
-def interpolation_memory(matrix,diff_t,t_search):
+def interpolation_memory(matrix, t_search):
     
     nb_rows = matrix.shape[0] if matrix.ndim > 1 else 1
-    current_time = 0
-    lower_row = -1
-    upper_row = -1
-
-    for i in range(nb_rows):
-        if current_time <= t_search and t_search < current_time + diff_t:
-            lower_row = i
-            upper_row = i + 1
-            break
-        current_time += diff_t
-        
-
-    lower_time = current_time
-    upper_time = current_time + diff_t
     
-    if upper_row == nb_rows:
-        
-        upper_row -= 1
-        lower_row -= 1
-        lower_time = current_time - diff_t
-        upper_time = current_time
-
-    lower_vars = matrix[lower_row] 
-    upper_vars = matrix[upper_row]
-
-    interpolated_vars = lower_vars + (t_search - lower_time) * (upper_vars - lower_vars) / (upper_time - lower_time)
+    times = matrix[:, -1]
+    index = np.searchsorted(times, t_search)
+    
+    if index == 0:
+        # t_search est inférieur au temps de simulation de la première ligne
+        interpolated_vars = matrix[0, :-1]
+    elif index == nb_rows:
+        # t_search est supérieur au temps de simulation de la dernière ligne
+        interpolated_vars = matrix[-1, :-1]
+    else:
+        # Interpolation linéaire entre les valeurs de deux lignes successives
+        lower_row = index - 1
+        upper_row = index
+        lower_time = times[lower_row]
+        upper_time = times[upper_row]
+        lower_vars = matrix[lower_row, :-1] 
+        upper_vars = matrix[upper_row, :-1]
+        interpolated_vars = lower_vars + (t_search - lower_time) * (upper_vars - lower_vars) / (upper_time - lower_time)
     
     return interpolated_vars
+
     
 
 def pressure_sheet(p,v):
@@ -94,7 +88,7 @@ def trunk_angle(P_sensor_hip, P_sensor_trunk,tsim):
     
     if tsim ==0 :
         
-        angle = 0
+        angle = 0.087441
         
     else : 
     
@@ -152,9 +146,33 @@ def limit_range(x,min,max): #fonction permettant de borner une variable
         return max
     else : return x
 
+# le tableau s qui est mis en entrée est un tableau avec 2 colonnes, une correspondant au valeur du signal et une correspondant au temps de simulation
+
 
 def filter_signal(s, num, den):
     
-    return signal.lfilter(num, den, s)
+    # Extraire les valeurs et les temps de simulation à partir du tableau d'entrée
+    x = s[:,0]
+    t = s[:,1]
+   
+    # Échantillonner les valeurs sur une grille régulière
+    t_interp = np.linspace(t.min(), t.max(), len(t))
+    x_interp = np.interp(t_interp, t, x)
 
+    # Appliquer le filtre linéaire
+    y = signal.lfilter(num, den, x_interp)
 
+    # Réinterpoler les valeurs filtrées sur la grille non régulière d'origine
+    y_interp = np.interp(t, t_interp, y)
+
+    # Créer un tableau numpy de deux colonnes pour le signal filtré
+    filtered_signal = np.column_stack((y_interp, t))
+
+    return filtered_signal
+    
+    
+def pop_malone(memory):
+    if - memory[0,-1] + memory[-1,-1] > 0.025 and len(np.shape(memory)) !=1 :
+        memory = np.delete(memory,0,axis=0)
+     
+    return memory

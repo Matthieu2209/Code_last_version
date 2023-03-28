@@ -6,7 +6,7 @@ Created on Mon Nov 14 14:29:41 2022
 @author: matthieuxaussems
 """
 import numpy as np
-import useful_functions as u_f
+import useful_functions_copie as u_f
 
 # 1) Fonction utile pour réaliser les lois de feedback des muscles en stance et en swing phase.
 # VAS : Force feedback, index du muscle 0
@@ -16,8 +16,7 @@ import useful_functions as u_f
 # des Forces motrices à chaque pas de temps, current time, pas de temps qui a permis de générer la mémoire de la force motrice.
 # parametre out : Vecteur Stim possédant l'update de la stimulation des muscles
 #
-def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,lce_memory, theta_knee_memory, 
-             dtheta_knee_memory,theta_trunk_memory,dtheta_trunk_memory,current_t, diff_t):
+def Feedback(current_t, diff_t, Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,lce_memory, theta_knee_memory,dtheta_knee_memory,theta_trunk_memory,dtheta_trunk_memory):
     
     VAS =0
     SOL =1
@@ -31,7 +30,7 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
 
     # données nécessaires pour les lois de reflexes
     
-    G_VAS = 1.15/6000 #gains for the VAS muscle normalised with the maximal force
+    G_VAS = 2e-4 #gains for the VAS muscle normalised with the maximal force
     G_SOL = 1.2/4000 #gains for the SOL muscle normalised with the maximal force
     
     G_GAS = 1.1/1500
@@ -39,18 +38,18 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
     G_SOL_TA = 0.0001
     
     G_HAM = 0.65/3000
-    G_GLU = 3.33e-4
+    G_GLU = 3.3333e-4
     G_HFL = 0.5
     G_HAM_HFL = 4
     
     #offset
     
     loff_TA = 0.71
-    lopt_TA = 6
+    lopt_TA = 0.6
     loff_HAM = 0.85
-    lopt_HAM = 10
+    lopt_HAM = 0.10
     loff_HFL = 0.6
-    lopt_HFL = 11
+    lopt_HFL = 0.11
     
     #pre-stimulations
     
@@ -65,7 +64,7 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
     k_d = 0.2
     k_bw = 1.2/80 #normaliser par le bodyweight
     k_phi = 2
-    phi_k_off = 2.97
+    phi_k_off = 2.9671
     theta_ref = 0.105 
     delta_S = 0.25
     
@@ -81,14 +80,16 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
     
     #delay on stance informations
     
+    times = Stance_memory[:,-1]
+    index = np.searchsorted(times,t_m)
+    
     if t_m<0 : 
         
-        stance_or_swing = Stance_memory[0]
+        stance_or_swing = False # tant qu'on a pas dépasse le délai on considère qu'on est en swing
     
     else :
         
-        stance_or_swing = Stance_memory[int(round(t_m))]
-    
+        stance_or_swing = Stance_memory[index,0]
     
     #lois de reflexe
     
@@ -107,13 +108,16 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
             Stim[GLU] = So_BAL
             Stim[HFL] = So_BAL
             
+            
         else: 
             
-            Stim[HAM] = So_BAL + u_f.limit_range((k_p * (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) + k_d* u_f.interpolation_memory(dtheta_trunk_memory, diff_t, t_s)),0,float("inf"))
-            Stim[GLU] = So_BAL + u_f.limit_range((k_p * (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) + k_d* u_f.interpolation_memory(dtheta_trunk_memory, diff_t, t_s)),0,float("inf")) 
-            Stim[HFL] = So_BAL - u_f.limit_range((k_p * (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) + k_d* u_f.interpolation_memory(dtheta_trunk_memory, diff_t, t_s)),float("-inf"),0) 
             
-            PTO = (u_f.interpolation_memory(theta_trunk_memory, diff_t, t_s)-theta_ref) 
+            Stim[HAM] = So_BAL + u_f.limit_range((k_p * (u_f.interpolation_memory(theta_trunk_memory,t_s)-theta_ref) + k_d* u_f.interpolation_memory(dtheta_trunk_memory,t_s)),0,float("inf"))
+            Stim[GLU] = So_BAL + u_f.limit_range((k_p * (u_f.interpolation_memory(theta_trunk_memory,t_s)-theta_ref) + k_d* u_f.interpolation_memory(dtheta_trunk_memory,t_s)),0,float("inf")) 
+            Stim[HFL] = So_BAL - u_f.limit_range((k_p * (u_f.interpolation_memory(theta_trunk_memory,t_s)-theta_ref) + k_d* u_f.interpolation_memory(dtheta_trunk_memory,t_s)),float("-inf"),0) 
+            
+            
+            PTO = (u_f.interpolation_memory(theta_trunk_memory,t_s)-theta_ref) 
         
         ###### loi de reflex pour les muscles ayant un delai mid (VAS) :
         
@@ -129,12 +133,12 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
                 
             else :
                 
-                Stim[VAS] = So_VAS + G_VAS*u_f.interpolation_memory(Fm_memory, diff_t, t_m)[VAS]
+                Stim[VAS] = So_VAS + G_VAS*u_f.interpolation_memory(Fm_memory,t_m)[VAS]
                 
             
-            if u_f.interpolation_memory(theta_knee_memory, diff_t, t_m) > phi_k_off and u_f.interpolation_memory(dtheta_knee_memory, diff_t, t_m)>0:
+            if u_f.interpolation_memory(theta_knee_memory,t_m) > phi_k_off and u_f.interpolation_memory(dtheta_knee_memory,t_m)>0:
                 
-                Stim[VAS] -= k_phi*(u_f.interpolation_memory(theta_knee_memory, diff_t, t_m)-phi_k_off)
+                Stim[VAS] -= k_phi*(u_f.interpolation_memory(theta_knee_memory,t_m)-phi_k_off)
                 
 
         ###### loi de reflex pour les muscles ayant un delai long (SOL,GAS,TA)
@@ -155,9 +159,10 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
 
             else :
                 
-                Stim[SOL] = So + G_SOL*u_f.interpolation_memory(Fm_memory, diff_t, t_l)[SOL]
-                Stim[GAS] = So + G_GAS*u_f.interpolation_memory(Fm_memory, diff_t, t_l)[GAS]
-                Stim[TA]  = So - G_SOL_TA*u_f.interpolation_memory(Fm_memory, diff_t, t_l)[SOL]
+                Stim[SOL] = So + G_SOL*u_f.interpolation_memory(Fm_memory,t_l)[SOL]
+                Stim[GAS] = So + G_GAS*u_f.interpolation_memory(Fm_memory,t_l)[GAS]
+                Stim[TA]  = So - G_SOL_TA*u_f.interpolation_memory(Fm_memory,t_l)[SOL]
+            
             
             if len(np.shape(lce_memory)) == 1 :
                 
@@ -165,30 +170,30 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
             
             else : 
                 
-                Stim[TA] += G_TA*u_f.limit_range((u_f.interpolation_memory(lce_memory, diff_t, t_l)[TA]/lopt_TA - loff_TA),0,float("inf"))
-                
+                Stim[TA] += G_TA*u_f.limit_range((u_f.interpolation_memory(lce_memory,t_l)[TA]/lopt_TA - loff_TA),0,float("inf"))
+            
         
         ##### Impact de la charge portée par la jambe ipsilatérale
         
         DeltaThRef =0.005
         
         if t_s >= 0 :
-            IDx_thigh = u_f.limit_range(u_f.interpolation_memory(ipsiDx_thigh, diff_t, t_s), 0, float("inf"))
+            IDx_thigh = u_f.limit_range(u_f.interpolation_memory(ipsiDx_thigh,t_s),0, float("inf"))
             Stim[HAM] = u_f.limit_range((IDx_thigh/DeltaThRef *Stim[HAM]),0,1)
             Stim[GLU] = u_f.limit_range((IDx_thigh/DeltaThRef *Stim[GLU]),0,1)
             Stim[HFL] = u_f.limit_range((IDx_thigh/DeltaThRef *Stim[HFL]),0,1)
         
-        ##### Double support 
+        # ##### Double support 
         
         if t_s >= 0 :
             
-            CDx_thigh = u_f.limit_range(u_f.interpolation_memory(contraDx_thigh, diff_t, t_s), 0, float("inf"))
-            Stim[VAS] -= contra_on_ipsi*u_f.interpolation_memory(CDx_thigh, diff_t, t_s)/DeltaThRef
+            CDx_thigh = u_f.limit_range(u_f.interpolation_memory(contraDx_thigh,t_s), 0, float("inf"))
+            Stim[VAS] -= contra_on_ipsi*CDx_thigh/DeltaThRef
         
         Stim[GLU] -= contra_on_ipsi*DS
         Stim[HFL] += contra_on_ipsi*DS
         
-        ##### Gain parameter for GLU
+        # ##### Gain parameter for GLU
         
         Stim[GLU]*=0.7
          
@@ -223,8 +228,8 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
                 
             else :
                 
-                Stim[HAM] = So + G_HAM * u_f.interpolation_memory(Fm_memory, diff_t, t_s)[HAM]
-                Stim[GLU] = So + G_GLU * u_f.interpolation_memory(Fm_memory, diff_t, t_s)[GLU]
+                Stim[HAM] = So + G_HAM * u_f.interpolation_memory(Fm_memory,t_s)[HAM]
+                Stim[GLU] = So + G_GLU * u_f.interpolation_memory(Fm_memory,t_s)[GLU]
         
             
             if len(np.shape(lce_memory)) == 1 :
@@ -233,7 +238,7 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
                 
             else : 
                 
-                Stim[HFL] = So + G_HFL * u_f.limit_range((u_f.interpolation_memory(lce_memory, diff_t, t_s)[HFL]/lopt_HFL - loff_HFL),0,float("inf")) - G_HAM_HFL * u_f.limit_range((u_f.interpolation_memory(lce_memory, diff_t, t_s)[HAM]/lopt_HAM  - loff_HAM),0,float("inf")) + k_lean*PTO
+                Stim[HFL] = So + G_HFL * u_f.limit_range((u_f.interpolation_memory(lce_memory,t_s)[HFL]/lopt_HFL - loff_HFL),0,float("inf")) - G_HAM_HFL * u_f.limit_range((u_f.interpolation_memory(lce_memory,t_s)[HAM]/lopt_HAM  - loff_HAM),0,float("inf")) + k_lean*PTO
                 
                 
         ###### loi de reflex pour les muscles ayant un delai long (TA)
@@ -250,10 +255,11 @@ def Feedback(Stance_memory,Fm_memory,ipsiDx_thigh,contraDx_thigh,contra_on_ipsi,
             
             else : 
                 
-                Stim[TA] = So + G_TA * u_f.limit_range((u_f.interpolation_memory(lce_memory, diff_t, t_l)[TA]/lopt_TA - loff_TA),0,float("inf"))
+                Stim[TA] = So + G_TA * u_f.limit_range((u_f.interpolation_memory(lce_memory,t_l)[TA]/lopt_TA - loff_TA),0,float("inf"))
     
     for i in range(len(Stim)):
         Stim[i] = u_f.limit_range(Stim[i], 0.01, 1)
+    
         
     return Stim
 
@@ -319,7 +325,12 @@ def Boolean_sensors(P_Ball_L,P_Heel_L,P_Ball_R,P_Heel_R,Ground_limit):
 # parametre out :  LonR (1 si L lead on R et 0 sinon) et RonL (1 si R lead on L 0 sinon)
 #
 
-def lead(StanceL_memory,StanceR_memory): 
+def lead(StanceL_memory,StanceR_memory,tsim): 
+    
+    times = StanceL_memory[:,-1]
+
+    
+    index = np.searchsorted(times,tsim-0.01)-1
     
     LonR = 0
     RonL = 0
@@ -327,15 +338,15 @@ def lead(StanceL_memory,StanceR_memory):
     CountL =0
     CountR =1
     
-    for i in range(len(StanceL_memory)):
+    for i in range(len(StanceL_memory[:index,0])):
         
-        if StanceL_memory[i]:
+        if StanceL_memory[i,0]:
             
             CountL=CountL + 1
         else :
             CountL = 0
         
-        if StanceR_memory [i]:
+        if StanceR_memory [i,0]:
             
             CountR = CountR +1
         else : 

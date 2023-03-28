@@ -1,21 +1,7 @@
 
 ##############################################################
-#	file6.gen 20/02/2023 15:51:54    messages
+#	file7.gen 28/02/2023 12:45:37    messages
 ##############################################################
-Symbolic generation file : /usr/local/robotran/users/TFE_walking/upload/file6.gen
+Symbolic generation file : /usr/local/robotran/users/TFE_walking/upload/file7.gen
 Project : /usr/local/robotran/users/TFE_walking/upload/upload.mbs
-F27 - Link Forces (3D)
-
-##############################################################
-#	file0.gen 20/02/2023 15:51:54    messages
-##############################################################
-Symbolic generation file : /usr/local/robotran/users/TFE_walking/upload/file0.gen
-Project : /usr/local/robotran/users/TFE_walking/upload/upload.mbs
-F1 - Recursive Direct Dynamics of tree-like MBS
-
-##############################################################
-#	file1b.gen 20/02/2023 15:51:54    messages
-##############################################################
-Symbolic generation file : /usr/local/robotran/users/TFE_walking/upload/file1b.gen
-Project : /usr/local/robotran/users/TFE_walking/upload/upload.mbs
-F6 - Sensors Kinematics
+F2 - Recursive Inverse Dynamics of tree-like MBS

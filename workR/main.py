@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Script to run a direct dynamic analysis on a multibody system.
@@ -34,7 +35,7 @@ except:
 # %%===========================================================================
 # Project loading
 # =============================================================================
-mbs_data = Robotran.MbsData('../dataR/Modele_V4.mbs')
+mbs_data = Robotran.MbsData('../dataR/Modele_V4_copie.mbs')
 
 # %%===========================================================================
 # Partitionning
@@ -49,10 +50,12 @@ mbs_part.run()
 # =============================================================================
 mbs_data.process = 3
 mbs_dirdyn = Robotran.MbsDirdyn(mbs_data)
-mbs_dirdyn.set_options(dt0=1e-2, tf=0.6
-                       , save2file=1)
+#print(Robotran.MbsDirdyn.set_options.__doc__)
+# mbs_dirdyn.set_options(integrator="Dopri5",verbose=1,rtoler=1.0e-3,atoler=1.0e-4,dt_max=0.1,dt0=1e-2, tf=0.005
+#                         , save2file=1)
+mbs_dirdyn.set_options(dt0=125e-6, tf=0.3
+                        , save2file=1)
 results = mbs_dirdyn.run()
-
 # %%===========================================================================
 # Plotting results
 # =============================================================================
@@ -66,7 +69,10 @@ fig = plt.figure(num='Example of plot')
 axis = fig.gca()
 
 # Plotting data's
-axis.plot(results.q[:, 0], results.q[:, 1], label='q[1]')
+#axis.plot(results.q[:, 0], results.outputs["HeelL Force x"], label='x HeelL')
+#axis.plot(results.q[:, 0], results.outputs["BallL Force x"], label='x BallL')
+#axis.plot(results.q[:, 0], results.outputs["HeelR Force x"], label='x HeelR')
+#axis.plot(results.q[:, 0], results.outputs["BallR Force x"], label='x BallR')
 
 # Figure enhancement
 axis.grid(True)

@@ -9,7 +9,7 @@ Created on Tue Oct 18 11:29:35 2022
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
-
+import useful_functions_copie as u_f
 
 
 ################################ Informations générales ####################################################################################
@@ -48,8 +48,10 @@ F_max_muscle = np.array([6000,4000,1500,800,3000,1500,2000])
 v_max_muscle = np.array([12,6,12,12,12,12,12])
 l_min_muscle = np.zeros(n_muscle)
 
+
 for i in range (n_muscle):
     l_min_muscle[i] = (1-w_muscle)*l_opt_muscle[i]
+
 
 #initial length, comme c'est des données qui change durant la simulation, il faut differencier les muscles de la jambe droite des muscles 
 #de la jambe gauche
@@ -118,99 +120,170 @@ def model_angle(articulation,robotran_angle) : # fonction qui permet de transfor
 # parametre in : longeur actuelle de l'element contractile[m], index du muscle dont on veut updater la longueur de l'élément contractile
 # parametre out : v_ce qui est la vitesse de contraction de l'élément contractile, soit la dérivé de la longueur de l'élément contractile
 #
-def vce_compute(l_ce_current,muscle,Act,leg,current_t):
+
+def vce_compute(l_ce_current, l_mtu_current, Act, muscle):  
     
-    ###Force_compute : On commence par le calcul de la force musculaire, qui est réalisé par l'intermédiare du calcul de la force de l'élément élastique en série F_m = F_se.
-    ###On a aussi l'update des forces sur les autres éléments (SE,CE,BE,PE)
-    global l_se
     
     # SE force-length relation
-    l_se[leg,muscle] = l_mtu[leg,muscle] - l_ce_current
-    epsilon = (l_se[leg,muscle] - l_slack_muscle[muscle])/l_slack_muscle[muscle]
-    if epsilon > 0 :
-        f_see = (epsilon/epsilon_ref)**2
+    l_se = l_mtu_current - l_ce_current
+
+    #SE
+    l_se_norm = l_se/l_slack_muscle[muscle]
+    
+    if l_se_norm > 1:
+        f_se = ((l_se_norm-1)/epsilon_ref)**2
     else:
-        f_see = 0
+        f_se = 0
     
-    # BE force-length relation
-    if l_ce_current <= l_min_muscle[muscle]:
-        
-        f_be = ((l_min_muscle[muscle]-l_ce_current)/(l_opt_muscle[muscle]*epsilon_be))**2
-    else :
-        f_be=0
-    
-    # PE force-length relation
-    if l_ce_current > l_opt_muscle[muscle]:
-        
-        f_pe_star = ((l_ce_current-l_opt_muscle[muscle])/(l_opt_muscle[muscle]*epsilon_pe))**2
-    else :
-        f_pe_star = 0
-        
-    
-    #fl : Relation force-longueur
-    f_l = np.exp(c*(abs((l_ce_current-l_opt_muscle[muscle])/(l_opt_muscle[muscle]*w_muscle)))**3)
-    
-    #fv : relation force-vitesse
-    
-    if Act ==0 :
-        
-        f_v = fv_inf
-    
-    else :
-    
-        f_v = (f_see + f_be)/(Act*f_l + f_pe_star)
-        
-    
-    #calcul de Fm
-    
-    F_m[leg,muscle] = (f_see + f_be)*F_max_muscle[muscle]
+    #BE
+    l_ce_norm = l_ce_current/l_opt_muscle[muscle]
     
     
-    ###v_ce compute : Ici on utilise l'inverse de la relation Force-vitesse afin de calculer la valeur de v_ce à partir de fv
+    if l_ce_norm -1 + w_muscle < 0 :
+        f_be = (2*(l_ce_norm-1+w_muscle)/w_muscle)**2 
+    else: 
+        f_be = 0 
     
-    if f_v <= 1 : 
-        
-        v_ce_norm = -v_max_muscle[muscle] * ((1-f_v)/(1+K_muscle*f_v))
-        
-    elif f_v > 1 and f_v <= N_muscle :
-        
-        v_ce_norm = -v_max_muscle[muscle] * ((f_v - 1.0) / (7.56 * K_muscle * (f_v - N_muscle) + 1.0 - N_muscle))
-        
-    else : 
-        
-        v_ce_norm = v_max_muscle[muscle] * ((f_v - N_muscle)*(0.01) + 1)
+    #PE
+    if l_ce_norm > 1 :
+        f_pe =  ((l_ce_norm-1)/w_muscle)**2
+    else: 
+        f_pe = 0
+    
+    # if muscle == VAS : 
+    #     print(l_ce_norm)
     
     
-    v_ce_current = v_ce_norm*l_opt_muscle[muscle]
+    #CE
+    f_ce = np.exp(c*(np.abs(l_ce_norm-1)/w_muscle)**3)  
+    # if f_ce < fl_inf :        
+    #     f_ce= fl_inf
+      
+    #force vitesse
+    f_v = (f_se + f_be)/(f_pe + f_ce * Act)
+    # f_v = u_f.limit_range(f_v, fv_inf, fv_sup)
+
+    #vitesse normalisée (relation inverse)
+    if f_v <= 1 :
+        v_norm = (f_v-1)/(f_v * K_muscle + 1)
+    elif f_v > 1 and f_v < N_muscle:
+        v_norm = ((f_v-N_muscle)/(N_muscle-1)+1)/(1-7.56*K_muscle*(f_v-N_muscle)/(N_muscle-1))
+    else: 
+        v_norm = 0.01*(f_v-N_muscle)+1
+
+    #vitesse elem contractil
+    v_ce_norm = v_norm * v_max_muscle[muscle] * l_opt_muscle[muscle]
+    # force muscle
+    f_m = (f_se + f_be)*F_max_muscle[muscle]
     
-    return (v_ce_current,F_m[leg,muscle])
+    return (v_ce_norm, f_m)
 
 
-# 2) deuxième fonction qui permet d'integrer v_ce en utilisant la méthode des itérations de Euler
+
+
+# def vce_compute(l_ce_current,muscle,Act,leg,current_t):
+    
+#     ###Force_compute : On commence par le calcul de la force musculaire, qui est réalisé par l'intermédiare du calcul de la force de l'élément élastique en série F_m = F_se.
+#     ###On a aussi l'update des forces sur les autres éléments (SE,CE,BE,PE)
+#     global l_se
+    
+#     # SE force-length relation
+#     l_se[leg,muscle] = l_mtu[leg,muscle] - l_ce_current
+#     epsilon = (l_se[leg,muscle] - l_slack_muscle[muscle])/l_slack_muscle[muscle]
+#     if epsilon > 0 :
+#         f_see = (epsilon/epsilon_ref)**2
+#     else:
+#         f_see = 0
+    
+#     # BE force-length relation
+#     if l_ce_current <= l_min_muscle[muscle]:
+        
+#         f_be = ((l_min_muscle[muscle]-l_ce_current)/(l_opt_muscle[muscle]*epsilon_be))**2
+#     else :
+#         f_be=0
+    
+#     # PE force-length relation
+#     if l_ce_current > l_opt_muscle[muscle]:
+        
+#         f_pe_star = ((l_ce_current-l_opt_muscle[muscle])/(l_opt_muscle[muscle]*epsilon_pe))**2
+#     else :
+#         f_pe_star = 0
+        
+    
+#     #fl : Relation force-longueur
+#     f_l = np.exp(c*(abs((l_ce_current-l_opt_muscle[muscle])/(l_opt_muscle[muscle]*w_muscle)))**3)
+    
+#     #fv : relation force-vitesse
+    
+#     if Act ==0 :
+        
+#         f_v = fv_inf
+    
+#     else :
+    
+#         f_v = (f_see + f_be)/(Act*f_l + f_pe_star)
+        
+    
+#     #calcul de Fm
+    
+#     F_m[leg,muscle] = (f_see + f_be)*F_max_muscle[muscle]
+    
+    
+#     ###v_ce compute : Ici on utilise l'inverse de la relation Force-vitesse afin de calculer la valeur de v_ce à partir de fv
+    
+#     if f_v <= 1 : 
+        
+#         v_ce_norm = -v_max_muscle[muscle] * ((1-f_v)/(1+K_muscle*f_v))
+        
+#     elif f_v > 1 and f_v <= N_muscle :
+        
+#         v_ce_norm = -v_max_muscle[muscle] * ((f_v - 1.0) / (7.56 * K_muscle * (f_v - N_muscle) + 1.0 - N_muscle))
+        
+#     else : 
+        
+#         v_ce_norm = v_max_muscle[muscle] * ((f_v - N_muscle)*(0.01) + 1)
+    
+    
+#     v_ce_current = v_ce_norm*l_opt_muscle[muscle]
+    
+#     return (v_ce_current,F_m[leg,muscle])
+
+
+# 2) deuxième fonction qui permet d'integrer v_ce en utilisant la méthode des trapèzes à 2 step pour obtenir lce;
 #
 # parametre in : pas de temps (que l'on peut obtenir), nombre d'itérations (5), index du muscle, activation, index de la jambe, current time 
 # parametre out : v_ce qui est la vitesse de contraction de l'élément contractile, soit la dérivé de la longueur de l'élément contractile
 #
-def EulerIterations(diff_t,Nb_iterations,muscle,Act,leg,current_t):
+# def EulerIterations(diff_t,Nb_iterations,muscle,Act,leg,current_t):
     
-    global v_ce
-    global l_ce
+#     global v_ce
+#     global l_ce
     
-    local_diff_t = diff_t / Nb_iterations
+#     local_diff_t = diff_t / Nb_iterations
     
-    l_ce_current =l_ce[leg,muscle]
+#     l_ce_current =l_ce[leg,muscle]
     
-    for i in range (Nb_iterations):
+#     for i in range (Nb_iterations):
         
-        v_ce_current = vce_compute(l_ce_current,muscle,Act,leg,current_t)[0]
-        l_ce_current = pos(l_ce_current+v_ce_current*local_diff_t)
-        fm_current = vce_compute(l_ce_current,muscle,Act,leg,current_t)[1]
+#         v_ce_current = vce_compute(l_ce_current,muscle,Act,leg,current_t)[0]
+#         l_ce_current = pos(l_ce_current+v_ce_current*local_diff_t)
+#         fm_current = vce_compute(l_ce_current,muscle,Act,leg,current_t)[1]
+#
     
-    v_ce[leg,muscle] = v_ce_current
-    l_ce[leg,muscle] = l_ce_current
+#     v_ce[leg,muscle] = v_ce_current
+#     l_ce[leg,muscle] = l_ce_current
     
-    return (fm_current,l_ce_current)
+#     return (fm_current,l_ce_current)
+
+# autre méthode d'intégration : Trapèze à 2 steps 
+
+def integrate_trapezoidal_2steps(l0, v1, dt):
     
+    
+    # Calcul de la longueur à l'étape suivante en utilisant la méthode des trapèzes à deux étapes
+    l1 = l0 + dt*v1
+    
+    return l1
 
 
 # 3) 3ème fonction qui permet d'updater la valeur de la longueur de l'unité musculaire l_mtu[m] en fonction de l'angle de l'articulation
@@ -221,7 +294,6 @@ def EulerIterations(diff_t,Nb_iterations,muscle,Act,leg,current_t):
 #
 def lmtu_update (phi,phi2,muscle,leg):
     
-    global l_mtu
     if muscle == VAS :
         
         delta_lmtu = + rho[knee,VAS]*r_0[knee,VAS]*(np.sin(phi_ref[knee,VAS]-phi_max[knee,VAS]) - np.sin(phi-phi_max[knee,VAS]))
@@ -253,7 +325,7 @@ def lmtu_update (phi,phi2,muscle,leg):
         delta_lmtu = + rho[hip,HFL]*r_0[hip,HFL]*(phi-phi_ref[hip,HFL])
         
     
-    l_mtu[leg,muscle]= l_opt_muscle[muscle] + l_slack_muscle[muscle] + delta_lmtu
+    return l_opt_muscle[muscle] + l_slack_muscle[muscle] + delta_lmtu
 
 
 
@@ -265,9 +337,7 @@ def lmtu_update (phi,phi2,muscle,leg):
 
 def torque_update (phi,F_m,articulation,muscle,leg):
     
-    global torque_L
-    global torque_R
-    
+  
     if articulation == hip : 
         
         lever = r_0[articulation,muscle]
@@ -276,13 +346,7 @@ def torque_update (phi,F_m,articulation,muscle,leg):
         
         lever = r_0[articulation,muscle]*np.cos(phi-phi_max[articulation,muscle])
     
-    if leg == Left : #jambe gauche
-    
-        torque_L[articulation,muscle] = lever*F_m[muscle]
-    
-    else :
-        
-        torque_R[articulation,muscle] = lever*F_m[muscle]
+    return lever*F_m[muscle]
 
 
 # 5) fonction qui permet d'appliquer les joint limits lorsque l'angle de l'articulation dépasse les limites, il y a un torque 
@@ -299,7 +363,7 @@ def joint_limits(articulation,phi,dphi):
     phi_k_up = 175 * np.pi/180
     phi_h_up = 230 * np.pi/180
     
-    c_joint = 17.1887
+    c_joint = 5.236e-3
     w_max = 0.01745
     
     if articulation == ankle : # ankle joint limits 
@@ -313,6 +377,7 @@ def joint_limits(articulation,phi,dphi):
             
             if u2<1 and u1>0 :
                 
+                
                 ext_torque = -u1*(1-u2)
             
             else : 
@@ -320,6 +385,7 @@ def joint_limits(articulation,phi,dphi):
                 ext_torque = 0
             
             if u4<1 and u3 < 0 :
+                
                 
                 flex_torque = -u3*(1-u4)
             
@@ -331,12 +397,14 @@ def joint_limits(articulation,phi,dphi):
         
         else : # raise an error if unrealistic values 
             
-            raise NameError('unrealistic values for the ankle joint')
-            
+            #raise NameError('unrealistic values for the ankle joint')
+            return 0
     
     elif articulation == knee : # knee joint limits
     
         if phi> 40 * np.pi/180 and phi < 185 * np.pi/180 : #check that the angle values do not take unrealistic values
+    
+            #print("knee")
     
             u1 = (phi- phi_k_up)*c_joint
             u2 = - dphi / w_max
@@ -353,13 +421,15 @@ def joint_limits(articulation,phi,dphi):
         
         else : # raise an error if unrealistic values 
             
-            raise NameError('unrealistic values for the knee joint')
-            
+            #raise NameError('unrealistic values for the knee joint')
+            return 0
     
     elif articulation == hip : # hip joint limits 
     
         if phi> 10 * np.pi/180 and phi < 260 * np.pi/180 : #check that the angle values do not take unrealistic values
-    
+            
+            #print("hip")
+            
             u1 = (phi- phi_h_up)*c_joint
             u2 = - dphi / w_max
             
@@ -374,8 +444,9 @@ def joint_limits(articulation,phi,dphi):
             return ext_torque
         
         else : # raise an error if unrealistic values 
-                
-            raise NameError('unrealistic values for the hip joint')  
+        
+           #raise NameError('unrealistic values for the hip joint')
+           return 0
 
 
 # 6) fonction qui permet de déterminer le torque total et d'additionner le torque du joint limits
@@ -385,38 +456,22 @@ def joint_limits(articulation,phi,dphi):
 # parametre out : return le torque final à appliquer sur le joint
 #
 
-def torque_compute(articulation,leg,phi,dphi):
+def torque_compute(articulation,phi,dphi,torque):
     
-    if leg == Left : #left leg 
-    
-        if articulation == ankle : # ankle final torque
-        
-            total_torque = joint_limits(articulation, phi, dphi) - torque_L[articulation,SOL] -torque_L[articulation,GAS]+torque_L[articulation,TA]
-            
-        elif articulation == knee : # knee final torque
-        
-            total_torque = joint_limits(articulation, phi, dphi) + torque_L[articulation,VAS] -torque_L[articulation,GAS]-torque_L[articulation,HAM]
-        
-        elif articulation == hip : # hip final torque 
-    
-            total_torque = joint_limits(articulation, phi, dphi) - torque_L[articulation,HAM]-torque_L[articulation,GLU]+torque_L[articulation,HFL]
-    
-    else : #right leg
         
         if articulation == ankle : # ankle final torque
         
-            total_torque = joint_limits(articulation, phi, dphi) - torque_R[articulation,SOL] -torque_R[articulation,GAS]+torque_R[articulation,TA]
+            total_torque = - joint_limits(articulation, phi, dphi) - torque[articulation,SOL] - torque[articulation,GAS] + torque[articulation,TA]
             
         elif articulation == knee : # knee final torque
         
-            total_torque = joint_limits(articulation, phi, dphi) + torque_R[articulation,VAS] -torque_R[articulation,GAS]-torque_R[articulation,HAM]
+            total_torque = joint_limits(articulation, phi, dphi)  + torque[articulation,VAS] - torque[articulation,GAS] - torque[articulation,HAM]
         
         elif articulation == hip : # hip final torque 
     
-            total_torque = joint_limits(articulation, phi, dphi) -torque_R[articulation,HAM]-torque_R[articulation,GLU]+torque_R[articulation,HFL]
-    
-    return total_torque
-
+            total_torque = - joint_limits(articulation, phi, dphi) - torque[articulation,HAM] - torque[articulation,GLU] + torque[articulation,HFL]
+        
+        return total_torque
 
 
 

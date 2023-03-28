@@ -10,9 +10,9 @@
 #
 #	http://www.robotran.be 
 #
-#	==> Generation Date: Tue Feb 28 09:30:00 2023
+#	==> Generation Date: Tue Feb 28 12:45:37 2023
 #
-#	==> Project name: Modele_V4
+#	==> Project name: Modele_V4_copie
 #
 #	==> Number of joints: 14
 #
